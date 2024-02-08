@@ -27,7 +27,7 @@ namespace Abstraction {
         uint16_t symbolWidth()const{return m_symbolWidth;}
         uint16_t symbolHeight()const{return m_symbolHeight;}
         uint32_t tableSize()const{return m_tableSize;}
-        virtual DataContainer getStringBitmap(const char *string) const = 0;
+        virtual DataContainer getStringBitmap(const char *string, uint32_t maxW) const = 0;
 
     protected:
 

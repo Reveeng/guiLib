@@ -47,15 +47,15 @@ int main()
 
     MainWindow window;
 
-    Rectangle rect(0,0, 50,20, &window);
-    rect.setFillBackground(false);
+//    Rectangle rect(0,0, 20,20, &window);
+//    rect.setFillBackground(false);
 
-    rect.setBorderWidth(1);
+//    rect.setBorderWidth(0);
 
-    Label lbl("TEXT","small", &rect);
-    lbl.setAlignment(GObject::CenterIn);
+    Label lbl("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","small", &window);
+    lbl.setPosition(0,0);
+    //    lbl.setAlignment(GObject::CenterIn);
 
-    rect.setSizes(70,20);
 
 //    lbl.setPosition(5,5);
 
@@ -66,7 +66,7 @@ int main()
          std::this_thread::sleep_for(std::chrono::milliseconds(500));
         int x = xs[counter];
         int y = ys[counter];
-        rect.setPosition(x,y);
+//        rect.setPosition(x,y);
         counter = counter+1 == 4 ? 0 : counter+1;
     }
 

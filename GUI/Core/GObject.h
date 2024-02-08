@@ -37,11 +37,6 @@ public:
 
     void setAlignment(Alignment al);
 
-//    void setTopAnchor(GObject* o, AnchorType t);
-//    void setBottomAnchor(GObject* o, AnchorType t);
-//    void setRightAnchor(GObject* o, AnchorType t);
-//    void setLeftAnchor(GObject* o, AnchorType t);
-
 protected:
     virtual void updateBuffer() = 0;
     virtual void draw(bool force = false);
@@ -50,7 +45,7 @@ protected:
     virtual void afterObjectSizesChanged() override;
     virtual void afterVisibleChanged() override;
 
-    void calculatePosition();
+    virtual void calculatePosition();
 
     void setBuffer(AbstractFrameBuffer *buf);
 
@@ -61,16 +56,7 @@ private:
     std::vector<GObject*> m_children;
     Alignment m_alignment;
 
-//    bool isVerticalBounded() const;
-//    bool isHorizontalBounded() const;
-
     void calculatePositionAlignBased();
-//    void calculateHorizontalPosition();
-
-//    void calculateVerticalPosition();
-//    void calculateNewY(const std::pair<GObject*,AnchorType> &p);
-//    void calculateNewWidth(const std::pair<GObject*,AnchorType> &tp, const std::pair<GObject*,AnchorType> &bt);
-//    std::array<std::pair<GObject*,AnchorType>,4> m_anchors;
 };
 
 #endif // GOBJECT_H

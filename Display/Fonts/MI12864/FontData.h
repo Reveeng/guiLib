@@ -38,18 +38,24 @@ namespace Display{
             return m_asciiOffset;
         }
 
-        virtual DataContainer getStringBitmap(const char *string) const override final
+        virtual DataContainer getStringBitmap(const char *string, uint32_t mW) const override final
         {
             std::string label(string);
-            char *data =  new char[label.size()*m_symbolWidth*m_symbolHeight/8];
+            uint32_t maxSymbolsSize = mW/m_symbolWidth;
+            uint32_t predW = label.size() > maxSymbolsSize ? maxSymbolsSize : label.size();
+
+            uint32_t bufSize = predW*m_symbolWidth*(m_symbolHeight/9+1);
+            char *data =  new char[bufSize];
+            std::memset(data,0,bufSize);
             char *dataPtr = data;
             if (!data)
                 return DataContainer(nullptr,false);
             int byteHeight = m_symbolHeight/9+1;
-            for (char c : label){
-                const unsigned char *bitmap = charBitmap(c);
+            for (uint32_t i = 0; i < maxSymbolsSize; ++i){
+                const unsigned char *bitmap = charBitmap(label[i]);
                 for (int h = 0; h < byteHeight; ++h){
-                    char *tmpPtr = data+h*label.size()*m_symbolWidth;
+                    int offset = h*predW*m_symbolWidth;
+                    char *tmpPtr = data+offset;
                     std::memcpy(tmpPtr,bitmap, m_symbolWidth);
                 }
                 data += m_symbolWidth;

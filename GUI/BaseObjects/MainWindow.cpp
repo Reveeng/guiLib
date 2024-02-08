@@ -10,6 +10,7 @@ MainWindow::MainWindow() :
     m_displayManager(256,0,true)
 {
     m_objectBuffer = new Buffer(m_displayManager.displayWidth(), m_displayManager.displayHeight());
+    setSizes(m_displayManager.displayWidth(), m_displayManager.displayHeight());
     MainEventLoop::start();
     m_objectEventLoop = MainEventLoop::getPointer();
 }

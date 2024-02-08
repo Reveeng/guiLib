@@ -151,6 +151,8 @@ bool GObjectBase::visible() const
 
 bool GObjectBase::isCalledFromMainEventLoop() const
 {
+    if (!m_objectEventLoop)
+        return true;
     return m_objectEventLoop->eventLoopThredId() == std::this_thread::get_id();
 }
 

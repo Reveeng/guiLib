@@ -75,81 +75,9 @@ void GObject::setAlignment(Alignment al)
         m_objectEventLoop->pushEvent(ev);
         return;
     }
-//    if (isVerticalBounded() && (al == VCenter || al == CenterIn))
-//        return;
-//    if (isHorizontalBounded() && (al == HCenter || al == CenterIn))
-//        return;
     m_alignment = al;
     calculatePosition();
 }
-
-//void GObject::setTopAnchor(GObject *o, AnchorType t)
-//{
-//    if (!isCalledFromMainEventLoop()){
-//        auto slf = std::bind(&GObject::setTopAnchor, this, _1, _2);
-//        Event<GObject*,AnchorType> ev(slf,o,t);
-//        m_objectEventLoop->pushEvent(ev);
-//        return;
-//    }
-//    if (t == Right || t == Left)
-//        return;
-//    if (m_alignment == VCenter || m_alignment == CenterIn)
-//        return;
-//    if (m_parent != o && o->m_parent != m_parent)
-//        return;
-//    m_anchors[Top] = std::make_pair(o,t);
-//}
-
-//void GObject::setBottomAnchor(GObject *o, AnchorType t)
-//{
-//    if (!isCalledFromMainEventLoop()){
-//        auto slf = std::bind(&GObject::setBottomAnchor, this, _1, _2);
-//        Event<GObject*,AnchorType> ev(slf,o,t);
-//        m_objectEventLoop->pushEvent(ev);
-//        return;
-//    }
-//    if (t == Right || t == Left )
-//        return;
-//    if (m_alignment == VCenter || m_alignment == CenterIn)
-//        return;
-//    if (m_parent != o && o->m_parent != m_parent)
-//        return;
-//    m_anchors[Bottom] = std::make_pair(o,t);
-//}
-
-//void GObject::setRightAnchor(GObject *o, AnchorType t)
-//{
-//    if (!isCalledFromMainEventLoop()){
-//        auto slf = std::bind(&GObject::setRightAnchor, this, _1, _2);
-//        Event<GObject*,AnchorType> ev(slf,o,t);
-//        m_objectEventLoop->pushEvent(ev);
-//        return;
-//    }
-//    if (t == Top || t == Bottom)
-//        return;
-//    if (m_alignment == HCenter || m_alignment == CenterIn)
-//        return;
-//    if (m_parent != o && o->m_parent != m_parent)
-//        return;
-//    m_anchors[Right] = std::make_pair(o,t);
-//}
-
-//void GObject::setLeftAnchor(GObject *o, AnchorType t)
-//{
-//    if (!isCalledFromMainEventLoop()){
-//        auto slf = std::bind(&GObject::setRightAnchor, this, _1, _2);
-//        Event<GObject*,AnchorType> ev(slf,o,t);
-//        m_objectEventLoop->pushEvent(ev);
-//        return;
-//    }
-//    if (t == Top || t == Bottom)
-//        return;
-//    if (m_alignment == HCenter || m_alignment == CenterIn)
-//        return;
-//    if (m_parent != o && o->m_parent != m_parent)
-//        return;
-//    m_anchors[Right] = std::make_pair(o,t);
-//}
 
 void GObject::draw(bool force)
 {
@@ -200,8 +128,6 @@ void GObject::calculatePosition()
         calculatePositionAlignBased();
         return;
     }
-//    calculateHorizontalPosition();
-//    calculateVerticalPosition();
 }
 
 void GObject::calculatePositionAlignBased()
@@ -225,53 +151,8 @@ void GObject::calculatePositionAlignBased()
     }
 }
 
-//void GObject::calculateVerticalPosition()
-//{
-//    AnchorPair top = m_anchors[Top];
-//    AnchorPair bottom = m_anchors[Bottom];
-//    uint32_t ny = y();
-//    uint32_t nw = width();
-//    if (m_parent == top.first){
-//        ny = top.second == Top ? 0 : ny;
-//    }
-//    if ((m_parent != top.first) && top.first){
-//        ny = top.second == Top ? top.first->y() : top.first->y()+top.first->height();
-//    }
-//    if ()
-
-//}
-
-//void GObject::calculateNewY(const AnchorPair &p)
-//{
-//    if (m_parent == p.first){
-
-//    }
-//}
-
-//void GObject::calculateNewWidth(const AnchorPair &tp, const AnchorPair &bt)
-//{
-
-//}
-
-//void GObject::calculateHorizontalPosition()
-//{
-
-//    AnchorPair right = m_anchors[Top];
-//    AnchorPair left = m_anchors[Bottom];
-//}
-
 void GObject::setBuffer(Display::Abstraction::AbstractFrameBuffer *buf)
 {
     m_objectBuffer = buf;
     draw();
 }
-
-//bool GObject::isVerticalBounded() const
-//{
-//    return m_anchors[Top].first || m_anchors[Bottom].first;
-//}
-
-//bool GObject::isHorizontalBounded() const
-//{
-//    return m_anchors[Right].first || m_anchors[Left].first;
-//}

@@ -15,6 +15,7 @@ namespace Display{
             ~LabelBuffer();
 
             void setFont(const FontData *font);
+            void setMaximumWidth(uint32_t w);
 
             const std::string &labelData() const;
             void setLabelData(const std::string &data);
@@ -32,6 +33,7 @@ namespace Display{
         private:
             std::string m_labelData;
             const FontData *m_font;
+            uint32_t m_maxWidth;
         };
     }
 }

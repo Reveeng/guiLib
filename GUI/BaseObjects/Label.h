@@ -21,7 +21,8 @@ public:
 
 protected:
 
-    virtual void updateBuffer();
+    virtual void updateBuffer() override;
+    virtual void calculatePosition() override;
 
 private:
     std::string m_fontName;

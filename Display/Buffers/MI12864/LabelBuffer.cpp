@@ -6,7 +6,8 @@ namespace Display{
     namespace MI12864{
         LabelBuffer::LabelBuffer(const std::string &data,
                                  const FontData *font):
-            m_labelData(data)
+            m_labelData(data),
+            m_maxWidth(1024)
         {
             if (font)
                 m_font = font;
@@ -24,6 +25,11 @@ namespace Display{
             m_font = font;
         }
 
+        void LabelBuffer::setMaximumWidth(uint32_t w)
+        {
+            m_maxWidth = w;
+        }
+
         const std::string &LabelBuffer::labelData() const
         {
             return m_labelData;
@@ -36,7 +42,7 @@ namespace Display{
 
         DataContainer LabelBuffer::data() const
         {
-            return m_font->getStringBitmap(m_labelData.c_str());
+            return m_font->getStringBitmap(m_labelData.c_str(), m_maxWidth);
         }
         
         void LabelBuffer::mergeData(const AbstractFrameBuffer *, uint32_t, uint32_t)
@@ -51,7 +57,8 @@ namespace Display{
 
         uint32_t LabelBuffer::width() const
         {
-            return m_labelData.size()*m_font->symbolWidth();
+            uint32_t w = m_labelData.size()*m_font->symbolWidth();
+            return w > m_maxWidth ? (m_maxWidth/m_font->symbolWidth())*m_font->symbolWidth() : w;
         }
 
         uint32_t LabelBuffer::height() const
