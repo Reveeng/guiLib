@@ -42,9 +42,14 @@ public:
             std::cout << "try to connect unconnectable objects\n";
             return;
         }
+        Anchor & a = m_anchors.get(sT);
+        GObject *obj = dynamic_cast<GObject*>(a.objectRef());
+        if (obj)
+            obj->removedAnchoredObject(this);
         m_anchors.setAnchor<sT,aT>(ref,offset);
         ref->m_anchoredObject.push_back(this);
         calculatePosition();
+        draw();
     }
 
 protected:
@@ -56,6 +61,8 @@ protected:
     virtual void afterVisibleChanged() override;
 
     virtual void calculatePosition();
+
+    void removedAnchoredObject(GObject *o);
 
     void setBuffer(AbstractFrameBuffer *buf);
 

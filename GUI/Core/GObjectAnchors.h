@@ -70,6 +70,7 @@ private:
     GObjectRectangle *m_parent;
 
     std::array<Anchor,4> m_anchors;
+    friend class GObject;
 };
 
 #endif // GOBJECTANCHORS_H

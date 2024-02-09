@@ -13,7 +13,6 @@ using namespace std;
 
 #include <Rectangle.h>
 #include <Label.h>
-#include <MainEventLoop.h>
 #include <MainWindow.h>
 
 using namespace Display;
@@ -48,13 +47,22 @@ int main()
     MainWindow window;
 
     Rectangle rect(0,0, 20,20, &window);
-
     rect.setFillBackground(false);
-
     rect.setBorderWidth(3);
 
-    Label label("AGA","small",&window);
+    Rectangle rect2(&window);
+    rect2.setAnchor<Right,Right>(&window,4);
+    rect2.setSizes(10,10);
+
+
+    Label label(&window);
     label.setAnchor<Top,Bottom>(&rect,3);
+
+    label.setAnchor<Right,Right>(&window,4);
+    label.setText("AGA");
+
+
+    label.setAnchor<Top,Bottom>(&rect2,3);
 //    Rectangle rect2(&window);
 //    rect2.setAnchor<Right,Right>(&rect);
 //    rect2.setAnchor<Top,Bottom>(&rect,2);

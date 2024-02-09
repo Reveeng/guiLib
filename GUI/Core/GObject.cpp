@@ -180,6 +180,15 @@ void GObject::calculatePosition()
     m_anchors.calculatePosition();
 }
 
+void GObject::removedAnchoredObject(GObject *o)
+{
+    auto pred = [o](GObjectRectangle *r){return o == r;};
+    auto iter = std::find_if(m_anchoredObject.begin(), m_anchoredObject.end(), pred);
+    if (iter == m_anchoredObject.end())
+        return;
+    m_anchoredObject.erase(iter);
+}
+
 void GObject::calculatePositionAlignBased()
 {
     auto parPos = m_parent->position();

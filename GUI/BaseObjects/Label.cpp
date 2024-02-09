@@ -47,7 +47,8 @@ void Label::changeFont(const std::string &fontName)
     LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
     b->setFont(fd);
     m_fontName = fontName;
-    updateBuffer();
+    setSizes(b->width(), b->height());
+//    updateBuffer();
     draw();
 }
 
@@ -74,7 +75,8 @@ void Label::setText(const std::string &t)
     if (t == b->labelData())
         return;
     b->setLabelData(t);
-    updateBuffer();
+    setSizes(b->width(), b->height());
+//    updateBuffer();
     draw();
 }
 
@@ -92,7 +94,6 @@ std::string Label::text() const
 
 void Label::updateBuffer()
 {
-
 }
 
 void Label::calculatePosition()
