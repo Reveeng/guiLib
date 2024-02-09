@@ -51,7 +51,7 @@ namespace Display{
             if (!data)
                 return DataContainer(nullptr,false);
             int byteHeight = m_symbolHeight/9+1;
-            for (uint32_t i = 0; i < maxSymbolsSize; ++i){
+            for (uint32_t i = 0; i < predW; ++i){
                 const unsigned char *bitmap = charBitmap(label[i]);
                 for (int h = 0; h < byteHeight; ++h){
                     int offset = h*predW*m_symbolWidth;

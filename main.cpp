@@ -47,13 +47,21 @@ int main()
 
     MainWindow window;
 
-//    Rectangle rect(0,0, 20,20, &window);
-//    rect.setFillBackground(false);
+    Rectangle rect(0,0, 20,20, &window);
 
-//    rect.setBorderWidth(0);
+    rect.setFillBackground(false);
 
-    Label lbl("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","small", &window);
-    lbl.setPosition(0,0);
+    rect.setBorderWidth(3);
+
+    Label label("AGA","small",&window);
+    label.setAnchor<Top,Bottom>(&rect,3);
+//    Rectangle rect2(&window);
+//    rect2.setAnchor<Right,Right>(&rect);
+//    rect2.setAnchor<Top,Bottom>(&rect,2);
+//    rect2.setSizes(10,10);
+
+//    Label lbl("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","small", &window);
+//    lbl.setPosition(0,0);
     //    lbl.setAlignment(GObject::CenterIn);
 
 
@@ -66,7 +74,7 @@ int main()
          std::this_thread::sleep_for(std::chrono::milliseconds(500));
         int x = xs[counter];
         int y = ys[counter];
-//        rect.setPosition(x,y);
+        rect.setPosition(x,y);
         counter = counter+1 == 4 ? 0 : counter+1;
     }
 

@@ -4,10 +4,12 @@
 #include <GObjectBase.h>
 #include <AbstractFrameBuffer.h>
 #include <GTimer.h>
+#include <GObjectAnchors.h>
 #include <vector>
 
 using Coordinate = std::pair<uint32_t, uint32_t>;
 using Display::Abstraction::AbstractFrameBuffer;
+#include <iostream>
 
 class GObject : public GObjectBase
 {
@@ -18,13 +20,6 @@ public:
         VCenter,
         HCenter,
         CenterIn
-    };
-
-    enum AnchorType{
-        Top,
-        Bottom,
-        Right,
-        Left
     };
 
     GObject(GObject *parent);
@@ -40,6 +35,17 @@ public:
     GTimer *getTimer();
     uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
     void stopTimer(uint32_t id);
+
+    template<AnchorType sT, AnchorType aT>
+    void setAnchor(GObject *ref, uint32_t offset = 0){
+        if (ref != m_parent && ref->parent() != m_parent){
+            std::cout << "try to connect unconnectable objects\n";
+            return;
+        }
+        m_anchors.setAnchor<sT,aT>(ref,offset);
+        ref->m_anchoredObject.push_back(this);
+        calculatePosition();
+    }
 
 protected:
     virtual void updateBuffer() = 0;
@@ -58,11 +64,13 @@ protected:
 private:
     GObject * m_parent;
     std::vector<GObject*> m_children;
+    std::vector<GObject *> m_anchoredObject;
     Alignment m_alignment;
 
     std::vector<GTimer*> m_timers;
     uint32_t m_timerIdGen;
 
+    GObjectAnchors m_anchors;
     void calculatePositionAlignBased();
 };
 

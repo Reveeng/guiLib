@@ -25,6 +25,7 @@ HEADERS += \
     GUI/BaseObjects/MainWindow.h \
     GUI/BaseObjects/Rectangle.h \
     GUI/Core/GObject.h \
+    GUI/Core/GObjectAnchors.h \
     GUI/Core/GObjectBase.h \
     GUI/Core/GObjectRectangle.h \
     GUI/Core/GTimer.h \
@@ -44,6 +45,7 @@ SOURCES += \
     GUI/BaseObjects/MainWindow.cpp \
     GUI/BaseObjects/Rectangle.cpp \
     GUI/Core/GObject.cpp \
+    GUI/Core/GObjectAnchors.cpp \
     GUI/Core/GObjectBase.cpp \
     GUI/Core/GObjectRectangle.cpp \
     GUI/Core/GTimer.cpp \

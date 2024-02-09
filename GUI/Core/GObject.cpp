@@ -6,29 +6,31 @@
 
 using namespace std::placeholders;
 
-using AnchorPair = std::pair<GObject*, GObject::AnchorType>;
-
 GObject::GObject(GObject *p):
     GObjectBase(),
     m_objectBuffer(nullptr),
     m_parent(p),
-    m_alignment(NoAlign)
+    m_alignment(NoAlign),
+    m_anchors(this)
 {
     if (!m_parent)
         return;
     m_parent->m_children.push_back(this);
     m_objectEventLoop = m_parent->m_objectEventLoop;
+    m_anchors.setParent(m_parent);
 }
 
 GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
     GObjectBase(x,y,w,h),
     m_parent(p),
-    m_alignment(NoAlign)
+    m_alignment(NoAlign),
+    m_anchors(this)
 {
     if (!m_parent)
         return;
     m_parent->m_children.push_back(this);
     m_objectEventLoop = m_parent->m_objectEventLoop;
+    m_anchors.setParent(m_parent);
 }
 
 GObject::~GObject()
@@ -146,6 +148,8 @@ void GObject::clear(){
 
 void GObject::afterObjectPositionChanged()
 {
+    for (auto anchored : m_anchoredObject)
+        anchored->calculatePosition();
     draw();
 }
 
@@ -153,6 +157,9 @@ void GObject::afterObjectSizesChanged(){
     updateBuffer();
     for (auto child : m_children)
         child->calculatePosition();
+    for (auto anchored : m_anchoredObject)
+        anchored->calculatePosition();
+    calculatePosition();
     draw();
 }
 
@@ -170,6 +177,7 @@ void GObject::calculatePosition()
         calculatePositionAlignBased();
         return;
     }
+    m_anchors.calculatePosition();
 }
 
 void GObject::calculatePositionAlignBased()
