@@ -5,7 +5,6 @@
 #include <inttypes.h>
 #include <condition_variable>
 
-
 class AbstractEvent
 {
 public:
@@ -20,12 +19,6 @@ class Event : public AbstractEvent
 public:
     Event():
         AbstractEvent()
-    {
-
-    }
-    Event(std::function<void(Args...)> cb):
-        AbstractEvent(),
-        m_callback(cb)
     {
 
     }

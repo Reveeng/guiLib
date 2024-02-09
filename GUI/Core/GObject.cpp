@@ -33,6 +33,10 @@ GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
 
 GObject::~GObject()
 {
+    for (auto timer : m_timers){
+        timer->stop();
+        delete timer;
+    }
     for (auto child : m_children){
         child->m_parent = nullptr;
         delete child;
@@ -45,6 +49,7 @@ GObject::~GObject()
         if (iter != endIter)
             m_parent->m_children.erase(iter);
     }
+
     delete m_objectBuffer;
 }
 
@@ -77,6 +82,43 @@ void GObject::setAlignment(Alignment al)
     }
     m_alignment = al;
     calculatePosition();
+}
+
+GTimer *GObject::getTimer()
+{
+    GTimer * timer = new GTimer(m_objectEventLoop,m_timers.size());
+    m_timers.push_back(timer);
+    return timer;
+}
+
+uint32_t GObject::startTimer(std::function<void ()> f, uint32_t time, bool isSingleShot)
+{
+    GTimer *timer = new GTimer(m_objectEventLoop, m_timerIdGen);
+    timer->setSingleShot(isSingleShot);
+    timer->setDetached(true);
+    if (isSingleShot){
+        auto rebindF = [f, timer](){f();delete timer;};
+        auto rb = std::bind(rebindF);
+        timer->setTimeoutFunction(rb);
+    }else{
+        m_timers.push_back(timer);
+        timer->setTimeoutFunction(f);
+    }
+    timer->start(time);
+    m_timerIdGen += 1;
+    return isSingleShot ? 0 : timer->id();
+}
+
+void GObject::stopTimer(uint32_t id)
+{
+    auto pred = [id](GTimer* t){return t->id() == id;};
+    auto iter = std::find_if(m_timers.begin(), m_timers.end(), pred);
+    if (iter == m_timers.end())
+        return;
+    (*iter)->stop();
+    GTimer *t = *iter;
+    m_timers.erase(iter);
+    delete t;
 }
 
 void GObject::draw(bool force)

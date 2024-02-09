@@ -3,6 +3,7 @@
 
 #include <GObjectBase.h>
 #include <AbstractFrameBuffer.h>
+#include <GTimer.h>
 #include <vector>
 
 using Coordinate = std::pair<uint32_t, uint32_t>;
@@ -34,8 +35,11 @@ public:
     void setParent(GObject *p);
     const std::vector<GObject*> &children() const;
 
-
     void setAlignment(Alignment al);
+
+    GTimer *getTimer();
+    uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
+    void stopTimer(uint32_t id);
 
 protected:
     virtual void updateBuffer() = 0;
@@ -55,6 +59,9 @@ private:
     GObject * m_parent;
     std::vector<GObject*> m_children;
     Alignment m_alignment;
+
+    std::vector<GTimer*> m_timers;
+    uint32_t m_timerIdGen;
 
     void calculatePositionAlignBased();
 };

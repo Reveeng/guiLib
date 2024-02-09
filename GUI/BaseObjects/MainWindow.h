@@ -16,6 +16,7 @@ public:
 
 
 private:
+    uint32_t m_timerId;
     DisplayManager m_displayManager;
     static int m_objCounter;
 };
