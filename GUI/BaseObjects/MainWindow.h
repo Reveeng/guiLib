@@ -3,7 +3,6 @@
 
 #include <GObject.h>
 #include <DisplayManagerDebug.h>
-//using Display::CLI::DisplayManager;
 
 class MainWindow : public GObject
 {
@@ -14,10 +13,12 @@ public:
     virtual void redraw() override;
     virtual void updateBuffer() override final;
 
+    static uint32_t displayWidth();
+    static uint32_t displayHeight();
 
 private:
     uint32_t m_timerId;
-    Display::DisplayManagerDebug m_displayManager;
+    static Display::DisplayManagerDebug m_displayManager;
     static int m_objCounter;
 };
 

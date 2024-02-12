@@ -10,6 +10,7 @@ public:
     Label(GObject *parent);
     Label(const std::string &text,GObject *p);
     Label(const std::string &text,const std::string &fontName = "", GObject *parent = nullptr);
+    Label(const std::string &text,uint32_t mWidth, GObject *p);
 
     ~Label();
 
@@ -25,6 +26,7 @@ protected:
     virtual void calculatePosition() override;
 
 private:
+    bool m_fixedSize;
     std::string m_fontName;
 };
 

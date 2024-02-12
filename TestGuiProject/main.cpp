@@ -48,13 +48,13 @@ int main()
     MainWindow window;
 
     Button *btn = new Button("Test",&window);
-    btn->setSizes(50,20);
-    btn->setAlignment(GObject::CenterIn);
+//    btn->setSizes(50,20);
+//    btn->setAlignment(GObject::CenterIn);
 
     bool check = true;
     while (!stopFlag.load()){
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        btn->setFocused(check);
+//        btn->setFocused(check);
         check = !check;
     }
 
