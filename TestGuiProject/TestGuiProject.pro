@@ -2,6 +2,8 @@ QT -= gui core
 
 CONFIG += c++17
 
+INCLUDEPATH += ./Controls
+
 SOURCES += \
     Controls/Button.cpp \
     main.cpp

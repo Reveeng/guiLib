@@ -21,8 +21,7 @@ MainWindow::~MainWindow(){
     MainEventLoop::stop();
 }
 
-void MainWindow::draw(bool force){
-    (void)force;
+void MainWindow::redraw(){
     m_displayManager.drawBuffer(m_objectBuffer);
 }
 

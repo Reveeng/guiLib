@@ -14,6 +14,15 @@ Label::Label(GObject *parent):
     m_objectBuffer = b;
 
 }
+Label::Label(const std::string &text, GObject *p):
+    GObject(p),
+    m_fontName("")
+{
+    LabelBuffer *b = new LabelBuffer(text, FontManager::getDefaultFont());
+    b->setMaximumWidth(GObject::parent()->width());
+    m_objectBuffer = b;
+    setSizes(m_objectBuffer->width(), m_objectBuffer->height());
+}
 
 Label::Label(const std::string &text, const std::string &fontName,GObject* parent):
     GObject(parent),
@@ -48,7 +57,7 @@ void Label::changeFont(const std::string &fontName)
     b->setFont(fd);
     m_fontName = fontName;
     setSizes(b->width(), b->height());
-    draw();
+    redraw();
 }
 
 std::string Label::fontName() const
@@ -75,7 +84,7 @@ void Label::setText(const std::string &t)
         return;
     b->setLabelData(t);
     setSizes(b->width(), b->height());
-    draw();
+    redraw();
 }
 
 std::string Label::text() const
@@ -92,6 +101,13 @@ std::string Label::text() const
 
 void Label::updateBuffer()
 {
+    if (!parent())
+        return;
+
+    LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
+    b->setMaximumWidth(parent()->width());
+    setSizes(m_objectBuffer->width(), m_objectBuffer->height());
+    GObject::updateBuffer();
 }
 
 void Label::calculatePosition()
@@ -99,5 +115,5 @@ void Label::calculatePosition()
     LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
     b->setMaximumWidth(parent()->width());
     GObject::calculatePosition();
-    draw();
+    redraw();
 }

@@ -165,8 +165,6 @@ void Buffer::mergeData(const AbstractFrameBuffer *b, uint32_t x, uint32_t y)
         appendPage(startByte, bufSByte, shift,w);
         startPagePos += 1;
     }
-//    std::cout << "after merge data print" << '\n';
-//    draw();
 }
 
 void Buffer::clearRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
@@ -201,8 +199,6 @@ void Buffer::clearRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
         startPage += 1;
 
     }
-//    std::cout << "after clear buffer print" << '\n';
-//    draw();
 }
 
 uint32_t Buffer::bufferSize() const

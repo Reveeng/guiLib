@@ -1,6 +1,5 @@
 #include "LabelBuffer.h"
 #include <FontData.h>
-//#include <FontManager.h>
 
 namespace Display{
 LabelBuffer::LabelBuffer(const std::string &data,
@@ -10,8 +9,6 @@ LabelBuffer::LabelBuffer(const std::string &data,
 {
     if (font)
         m_font = font;
-//    else
-//        m_font = dynamic_cast<const FontData*>(FontManager::getDefaultFont());
 }
 
 LabelBuffer::~LabelBuffer()

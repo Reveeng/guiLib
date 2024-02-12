@@ -30,6 +30,7 @@ void GObjectRectangle::setX(uint32_t x)
     savePosition();
     m_currentPosition.x = x;
     afterObjectPositionChanged();
+    savePosition();
 }
 
 uint32_t GObjectRectangle::x() const
@@ -44,6 +45,7 @@ void GObjectRectangle::setY(uint32_t y)
     savePosition();
     m_currentPosition.y = y;
     afterObjectPositionChanged();
+    savePosition();
 }
 
 uint32_t GObjectRectangle::y() const
@@ -59,6 +61,7 @@ void GObjectRectangle::setPosition(uint32_t x, uint32_t y)
     m_currentPosition.x = x;
     m_currentPosition.y = y;
     afterObjectPositionChanged();
+    savePosition();
 }
 
 void GObjectRectangle::setWidth(uint32_t w)
@@ -68,6 +71,7 @@ void GObjectRectangle::setWidth(uint32_t w)
     savePosition();
     m_currentPosition.w = w;
     afterObjectSizesChanged();
+    savePosition();
 }
 
 uint32_t GObjectRectangle::width() const
@@ -82,6 +86,7 @@ void GObjectRectangle::setHeight(uint32_t h)
     savePosition();
     m_currentPosition.h = h;
     afterObjectSizesChanged();
+    savePosition();
 }
 
 uint32_t GObjectRectangle::height() const
@@ -97,6 +102,7 @@ void GObjectRectangle::setSizes(uint32_t w, uint32_t h)
     m_currentPosition.w = w;
     m_currentPosition.h = h;
     afterObjectSizesChanged();
+    savePosition();
 }
 
 void GObjectRectangle::savePosition()

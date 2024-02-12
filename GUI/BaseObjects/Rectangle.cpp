@@ -38,7 +38,7 @@ void Rectangle::setFillBackground(bool f)
         return;
     m_backgroundFill = f;
     updateBuffer();
-    draw();
+    redraw();
 }
 
 bool Rectangle::fillBackground() const
@@ -58,6 +58,7 @@ void Rectangle::updateBuffer()
     b->setSizes(width(), height());
     fillBorders();
     _fillBackground();
+    GObject::updateBuffer();
 }
 
 void Rectangle::_fillBackground(){
@@ -77,6 +78,8 @@ void Rectangle::_fillBackground(){
         }
         data += b->width();
     }
+    std::cout << "after fill background" << '\n';
+    b->draw();
 }
 
 void Rectangle::setBorderWidth(uint16_t w)
@@ -91,7 +94,7 @@ void Rectangle::setBorderWidth(uint16_t w)
         return;
     m_borderWidth = w;
     updateBuffer();
-    draw();
+    redraw();
 }
 
 uint16_t Rectangle::borderWidth() const
@@ -140,4 +143,6 @@ void Rectangle::fillBorders()
         std::memset(data+m_borderWidth,fillerByte,b->width()-m_borderWidth*2);
         data += b->width();
     }
+    std::cout << "after fill border" << '\n';
+    b->draw();
 }

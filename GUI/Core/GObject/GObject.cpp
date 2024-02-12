@@ -84,6 +84,7 @@ void GObject::setAlignment(Alignment al)
     }
     m_alignment = al;
     calculatePosition();
+    redraw();
 }
 
 GTimer *GObject::getTimer()
@@ -123,19 +124,23 @@ void GObject::stopTimer(uint32_t id)
     delete t;
 }
 
-void GObject::draw(bool force)
+void GObject::updateBuffer()
 {
-    if(!visible() || !m_parent)
-        return;
-    if (isPositionChanged() || force){
-        auto prevPos = previousPosition();
-        m_parent->m_objectBuffer->clearRectangle(prevPos.x,prevPos.y,
-                                                 prevPos.w,prevPos.h);
-        m_parent->updateBuffer();
+    for (auto child : m_children){
+        child->updateBuffer();
+        m_objectBuffer->mergeData(child->m_objectBuffer, child->x(), child->y());
     }
+}
 
-    m_parent->m_objectBuffer->mergeData(m_objectBuffer, x(),y());
-    m_parent->draw(true);
+void GObject::redraw()
+{
+    if (!visible() || !m_parent)
+        return;
+    Rect pos = position();
+    Rect ppos = previousPosition();
+    m_parent->m_objectBuffer->clearRectangle(ppos.x,ppos.y, ppos.w, ppos.h);
+    m_parent->m_objectBuffer->mergeData(m_objectBuffer,pos.x, pos.y);
+    m_parent->redraw();
 }
 
 void GObject::clear(){
@@ -143,14 +148,14 @@ void GObject::clear(){
         return;
     auto pos = position();
     m_parent->m_objectBuffer->clearRectangle(pos.x, pos.y, pos.w,pos.h);
-    m_parent->draw();
+    m_parent->redraw();
 }
 
 void GObject::afterObjectPositionChanged()
 {
     for (auto anchored : m_anchoredObject)
         anchored->calculatePosition();
-    draw();
+    redraw();
 }
 
 void GObject::afterObjectSizesChanged(){
@@ -160,12 +165,12 @@ void GObject::afterObjectSizesChanged(){
     for (auto anchored : m_anchoredObject)
         anchored->calculatePosition();
     calculatePosition();
-    draw();
+    redraw();
 }
 
 void GObject::afterVisibleChanged(){
     if (visible()){
-        draw();
+        redraw();
     }else{
         clear();
     }
@@ -213,5 +218,5 @@ void GObject::calculatePositionAlignBased()
 void GObject::setBuffer(Display::Abstraction::AbstractFrameBuffer *buf)
 {
     m_objectBuffer = buf;
-    draw();
+    redraw();
 }

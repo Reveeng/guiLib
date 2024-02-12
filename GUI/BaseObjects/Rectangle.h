@@ -21,12 +21,12 @@ public:
 
 protected:
     virtual void updateBuffer() override;
+    uint16_t m_borderWidth;
+    bool m_backgroundFill;
 
 private:
     void _fillBackground();
     void fillBorders();
-    uint16_t m_borderWidth;
-    bool m_backgroundFill;
 };
 
 #endif // RECTANGLE_H

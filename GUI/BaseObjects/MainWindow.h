@@ -11,7 +11,7 @@ public:
     MainWindow();
     ~MainWindow();
 
-    virtual void draw(bool force = false) override;
+    virtual void redraw() override;
     virtual void updateBuffer() override final;
 
 

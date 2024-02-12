@@ -49,12 +49,12 @@ public:
         m_anchors.setAnchor<sT,aT>(ref,offset);
         ref->m_anchoredObject.push_back(this);
         calculatePosition();
-        draw();
+        redraw();
     }
 
 protected:
-    virtual void updateBuffer() = 0;
-    virtual void draw(bool force = false);
+    virtual void updateBuffer();
+    virtual void redraw();
     void clear();
     virtual void afterObjectPositionChanged() override;
     virtual void afterObjectSizesChanged() override;

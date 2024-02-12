@@ -7,7 +7,8 @@
 class Label : public GObject
 {
 public:
-    Label(GObject *parent = nullptr);
+    Label(GObject *parent);
+    Label(const std::string &text,GObject *p);
     Label(const std::string &text,const std::string &fontName = "", GObject *parent = nullptr);
 
     ~Label();
