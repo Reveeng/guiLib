@@ -2,14 +2,13 @@
 #define LABEL_H
 
 #include <GObject.h>
-#include <Buffers/MI12864/LabelBuffer.h>
+#include <LabelBuffer.h>
 
 class Label : public GObject
 {
 public:
     Label(GObject *parent = nullptr);
     Label(const std::string &text,const std::string &fontName = "", GObject *parent = nullptr);
-//    Label(const )
 
     ~Label();
 
@@ -26,7 +25,6 @@ protected:
 
 private:
     std::string m_fontName;
-//    Display::MI12864::LabelBuffer m_buffer;
 };
 
 #endif // LABEL_H

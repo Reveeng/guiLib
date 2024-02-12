@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std::placeholders;
-using Display::MI12864::Buffer;
+using Display::Buffer;
 
 Rectangle::Rectangle(GObject *parent):
     GObject(parent),
@@ -19,7 +19,6 @@ Rectangle::Rectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
     m_backgroundFill(true)
 {
     m_objectBuffer = new Buffer(w,h);
-    draw();
 }
 
 Rectangle::~Rectangle()

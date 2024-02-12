@@ -1,15 +1,15 @@
 #include "Label.h"
 #include <FontManager.h>
-#include <Buffers/MI12864/Buffer.h>
+#include <LabelBuffer.h>
 
 using namespace std::placeholders;
-using Display::MI12864::LabelBuffer;
+using Display::LabelBuffer;
 
 Label::Label(GObject *parent):
     GObject(parent),
     m_fontName("")
 {
-    LabelBuffer *b = new LabelBuffer("");
+    LabelBuffer *b = new LabelBuffer("", FontManager::getDefaultFont());
     b->setMaximumWidth(GObject::parent()->width());
     m_objectBuffer = b;
 
@@ -19,7 +19,7 @@ Label::Label(const std::string &text, const std::string &fontName,GObject* paren
     GObject(parent),
     m_fontName(fontName)
 {
-    LabelBuffer *b = new LabelBuffer(text, Display::FontManager::getFontData(fontName));
+    LabelBuffer *b = new LabelBuffer(text, FontManager::getFontData(fontName));
     b->setMaximumWidth(GObject::parent()->width());
     m_objectBuffer = b;
     setSizes(m_objectBuffer->width(), m_objectBuffer->height());
@@ -32,7 +32,7 @@ Label::~Label()
 
 void Label::changeFont(const std::string &fontName)
 {
-    auto fd = Display::FontManager::getFontData(fontName);
+    auto fd = FontManager::getFontData(fontName);
     if (!fd)
         return;
     if (!isCalledFromMainEventLoop()){
@@ -48,7 +48,6 @@ void Label::changeFont(const std::string &fontName)
     b->setFont(fd);
     m_fontName = fontName;
     setSizes(b->width(), b->height());
-//    updateBuffer();
     draw();
 }
 
@@ -76,7 +75,6 @@ void Label::setText(const std::string &t)
         return;
     b->setLabelData(t);
     setSizes(b->width(), b->height());
-//    updateBuffer();
     draw();
 }
 

@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <GObject.h>
-#include <Backends/CLI/DisplayManager.h>
-using Display::CLI::DisplayManager;
+#include <DisplayManagerDebug.h>
+//using Display::CLI::DisplayManager;
 
 class MainWindow : public GObject
 {
@@ -17,7 +17,7 @@ public:
 
 private:
     uint32_t m_timerId;
-    DisplayManager m_displayManager;
+    Display::DisplayManagerDebug m_displayManager;
     static int m_objCounter;
 };
 

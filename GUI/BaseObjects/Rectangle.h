@@ -2,8 +2,9 @@
 #define RECTANGLE_H
 
 #include <GObject.h>
-#include <Buffers/MI12864/Buffer.h>
+#include <Buffer.h>
 
+using Display::Buffer;
 class Rectangle : public GObject
 {
 public:
