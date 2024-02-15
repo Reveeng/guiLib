@@ -49,9 +49,9 @@ public:
     virtual ~AbstractSetterCallable(){};
 };
 
-class AbstractSetterCallback{
+class AbstractGetterCallable{
 public:
-    virtual ~AbstractSetterCallback(){}
+          virtual ~AbstractGetterCallable(){};
 };
 
 template <typename ...Args>
@@ -93,6 +93,24 @@ private:
     std::size_t m_argSize;
     std::tuple<Args &...> m_objectDataRefs;
     std::vector<std::function<void(Args...)>> m_cbs;
+};
+
+template <typename T>
+class Getter : public AbstractGetterCallable{
+public:
+    Getter(T &ref):
+          AbstractGetterCallable(),
+          m_ref(ref)
+    {
+
+    }
+
+    T invoke()
+    {
+        return m_ref;
+    }
+private:
+    T& m_ref;
 };
 
 class AbstractClass;
@@ -174,6 +192,9 @@ public:
         for (auto &pair : m_setterMap){
             delete pair.second;
         }
+        for (auto &pair : m_getterMap){
+          delete pair.second;
+        }
         for (auto sender : m_senders){
             sender->disconnect(this);
         }
@@ -192,6 +213,13 @@ protected:
         m_setterMap[key] = dynamic_cast<AbstractSignalCallbackConnector*>(connector);
     }
 
+    template <typename T, std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
+    void createObjectGetter(const std::string &key, T& objP)
+    {
+        Getter<T> *get = new Getter<T>(objP);
+        m_getterMap[key] = dynamic_cast<AbstractGetterCallable*>(get);
+    }
+
     template <typename ...Args>
     void invokeSetter(const std::string &key, const Args&... args){
         AbstractSignalCallbackConnector *sc = m_setterMap[key];
@@ -199,6 +227,17 @@ protected:
             return;
         SignalCallbackConnector<Args...> *setter = dynamic_cast<SignalCallbackConnector<Args...> *>(sc);
         setter->invoke(args...);
+    }
+
+    template <typename T,std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
+    T invokeGetter(const std::string &key){
+        AbstractGetterCallable *g = m_getterMap[key];
+        Getter<T> *getter = dynamic_cast<Getter<T>*>(g);
+        if (!getter){
+            T t;
+            return t;
+        }
+        return getter->invoke();
     }
 
     template<class RecObject, typename ...Args,
@@ -245,6 +284,5 @@ private:
 
 
     std::map<std::string, AbstractSignalCallbackConnector*> m_setterMap;
+    std::map<std::string, AbstractGetterCallable*> m_getterMap;
 };
-
-#endif // ABSTRACTCLASS_H
