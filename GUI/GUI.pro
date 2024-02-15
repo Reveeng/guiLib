@@ -21,6 +21,7 @@ HEADERS += \
     Core/EventSystem/EventQueue.h \
     Core/EventSystem/MainEventLoop.h \
     Core/Font/FontManager.h \
+    Core/GObject/AbstractClass.h \
     Core/GObject/GObject.h \
     Core/GObject/GObjectAnchors.h \
     Core/GObject/GObjectBase.h \
