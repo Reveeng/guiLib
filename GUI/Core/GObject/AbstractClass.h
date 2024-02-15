@@ -7,8 +7,8 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-
-#include <iostream>
+#include <memory>
+#include <EventLoop.h>
 
 template <std::size_t I = 0, typename... Tp,
           std::enable_if_t<I == sizeof...(Tp),bool> = true>
@@ -186,7 +186,12 @@ private:
 class AbstractClass
 {
 public:
-    AbstractClass(){}
+    AbstractClass(AbstractClass *parent = nullptr):
+        m_parent(parent)
+    {
+        m_objectEventLoop = m_parent ? m_parent->m_objectEventLoop :
+                            std::make_shared<EventLoop>(new EventLoop());
+    }
     ~AbstractClass()
     {
         for (auto &pair : m_setterMap){
@@ -226,7 +231,14 @@ protected:
         if (!sc)
             return;
         SignalCallbackConnector<Args...> *setter = dynamic_cast<SignalCallbackConnector<Args...> *>(sc);
-        setter->invoke(args...);
+        if (m_objectEventLoop->eventLoopThredId() != std::this_thread::get_id()){
+            auto evF = bindHelper(&SignalCallbackConnector<Args...>::invoke, setter,
+                                std::make_tuple(args...), std::index_sequence<sizeof...(Args)>{});
+            Event<Args...> ev(evF);
+            m_objectEventLoop->pushEvent(ev);
+        }else{
+            setter->invoke(args...);
+        }
     }
 
     template <typename T,std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
@@ -237,7 +249,14 @@ protected:
             T t;
             return t;
         }
-        return getter->invoke();
+        if (m_objectEventLoop->eventLoopThredId() != std::this_thread::get_id()){
+            auto f = std::bind(&Getter<T>::invoke,getter);
+            WaitableEvent<T> ev(f);
+            m_objectEventLoop->pushEvent(ev);
+            return ev.waitEventExecution();
+        }else{
+            return getter->invoke();
+        }
     }
 
     template<class RecObject, typename ...Args,
@@ -275,6 +294,8 @@ protected:
 
 private:
     std::vector<AbstractClass*> m_senders;
+    std::shared_ptr<EventLoop>  m_objectEventLoop;
+    AbstractClass *m_parent;
 
 
     std::tuple<decltype(std::placeholders::_1),
@@ -286,3 +307,6 @@ private:
     std::map<std::string, AbstractSignalCallbackConnector*> m_setterMap;
     std::map<std::string, AbstractGetterCallable*> m_getterMap;
 };
+
+
+#endif
