@@ -14,25 +14,25 @@ enum AnchorType{
 
 class Anchor{
 public:
-    Anchor(GObjectRectangle *ref = nullptr);
+    Anchor(GObjectBase *ref = nullptr);
     Anchor(Anchor&o);
     Anchor(Anchor&&o);
 
-    void setObjectRef(GObjectRectangle *ref);
+    void setObjectRef(GObjectBase *ref);
     void setRerType(AnchorType type);
     void setOffset(uint32_t off);
 
-    GObjectRectangle *objectRef() const;
+    GObjectBase *objectRef() const;
     AnchorType refType() const;
     uint32_t offset() const;
 
     bool hasAnchor() const;
 
-    uint32_t refX(GObjectRectangle *p);
-    uint32_t refY(GObjectRectangle *p);
+    uint32_t refX(GObjectBase *p);
+    uint32_t refY(GObjectBase *p);
 
 private:
-    GObjectRectangle *m_ref;
+    GObjectBase *m_ref;
     AnchorType m_refType;
     uint32_t m_offset;
 };
@@ -42,14 +42,14 @@ class GObjectAnchors
 public:
 
 
-    GObjectAnchors(GObjectRectangle *self);
-    void setParent(GObjectRectangle *parent);
+    GObjectAnchors(GObjectBase *self);
+    void setParent(GObjectBase *parent);
 
     //ref should be parent of current item or they should have common parent
     template<AnchorType sType,AnchorType aType,
              typename std::enable_if_t<sType != None, bool> = true,
              typename std::enable_if_t<(((sType <= Bottom)&&(aType <= Bottom)) || ((sType >= Left) && (aType >= Left))),bool> = true>
-    void setAnchor(GObjectRectangle *ref, uint32_t offset = 0)
+    void setAnchor(GObjectBase *ref, uint32_t offset = 0)
     {
         m_anchors[sType].setObjectRef(ref);
         m_anchors[sType].setRerType(aType);
@@ -66,8 +66,8 @@ private:
     uint32_t calculateWidth();
     uint32_t calculateHeight();
 
-    GObjectRectangle *m_self;
-    GObjectRectangle *m_parent;
+    GObjectBase *m_self;
+    GObjectBase *m_parent;
 
     std::array<Anchor,4> m_anchors;
     friend class GObject;

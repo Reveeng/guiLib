@@ -1,7 +1,7 @@
 #include "GObjectAnchors.h"
 #include <utility>
 
-Anchor::Anchor(GObjectRectangle *ref):
+Anchor::Anchor(GObjectBase *ref):
     m_ref(ref),
     m_refType(None),
     m_offset(0)
@@ -25,7 +25,7 @@ Anchor::Anchor(Anchor &&o):
 
 }
 
-void Anchor::setObjectRef(GObjectRectangle *ref)
+void Anchor::setObjectRef(GObjectBase *ref)
 {
     m_ref = ref;
 }
@@ -40,7 +40,7 @@ void Anchor::setOffset(uint32_t off)
     m_offset = off;
 }
 
-GObjectRectangle *Anchor::objectRef() const
+GObjectBase *Anchor::objectRef() const
 {
     return m_ref;
 }
@@ -59,7 +59,7 @@ bool Anchor::hasAnchor() const{
     return m_ref != nullptr;
 }
 
-uint32_t Anchor::refX(GObjectRectangle *p)
+uint32_t Anchor::refX(GObjectBase *p)
 {
     if (p == m_ref){
         return m_refType == Left ? 0 : m_ref->width();
@@ -69,7 +69,7 @@ uint32_t Anchor::refX(GObjectRectangle *p)
 }
 
 
-uint32_t Anchor::refY(GObjectRectangle *p)
+uint32_t Anchor::refY(GObjectBase *p)
 {
     if (p == m_ref){
         return m_refType == Top ? 0 : m_ref->height();
@@ -81,13 +81,13 @@ uint32_t Anchor::refY(GObjectRectangle *p)
 
 /**/
 
-GObjectAnchors::GObjectAnchors(GObjectRectangle *self):
+GObjectAnchors::GObjectAnchors(GObjectBase *self):
     m_self(self)
 {
 
 }
 
-void GObjectAnchors::setParent(GObjectRectangle *parent)
+void GObjectAnchors::setParent(GObjectBase *parent)
 {
     m_parent = parent;
 }

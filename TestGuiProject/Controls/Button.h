@@ -15,14 +15,13 @@ public:
     std::string text() const;
 
     void setFocused(bool f);
-//    bool focused() const;
 
 
 protected:
     Label *contentItem();
 
 private:
-//    std::atomic<bool> m_focused;
+    void calculateSize();
     Label *m_label;
 };
 

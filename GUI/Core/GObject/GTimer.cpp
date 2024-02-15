@@ -2,32 +2,19 @@
 #include <thread>
 #include <chrono>
 
-GTimer::GTimer(uint32_t id):
+GTimer::GTimer(AbstractClass *parent,uint32_t id):
+    AbstractClass(parent),
     m_isSingleShot(false),
     m_isDetached(false),
     m_time(1000),
-    m_ev(nullptr),
-    m_eventLoop(nullptr),
     m_id(id)
 {
-
-}
-
-GTimer::GTimer(EventLoop *lp, uint32_t id):
-    m_isSingleShot(false),
-    m_isDetached(true),
-    m_time(1000),
-    m_ev(nullptr),
-    m_eventLoop(lp),
-    m_id(id)
-{
-
+    createObjectSetter("timeout");
 }
 
 GTimer::~GTimer()
 {
     stop();
-    delete m_ev;
 }
 
 
@@ -87,17 +74,6 @@ bool GTimer::isDetached() const
 uint32_t GTimer::id() const{
     return m_id;
 }
-
-void GTimer::setTimerEventLoop(EventLoop *evL)
-{
-    m_eventLoop = evL;
-}
-
-void GTimer::setTimeoutFunction(std::function<void ()> f)
-{
-    m_ev = new Event<>(f);
-}
-
 void GTimer::startDetached()
 {
     if (m_isSingleShot)
@@ -113,7 +89,7 @@ void GTimer::repeatedF()
         std::unique_lock<std::mutex> g(m_mutex);
         st = m_cancelCv.wait_for(g, std::chrono::milliseconds(m_time));
         if (st == std::cv_status::timeout)
-            m_eventLoop->pushEvent(*m_ev);
+            invokeSetter("timeout");
     }
 }
 
@@ -121,5 +97,5 @@ void GTimer::singleShotF(){
     std::unique_lock<std::mutex> g(m_mutex);
     std::cv_status st = m_cancelCv.wait_for(g,std::chrono::milliseconds(m_time));
     if (st == std::cv_status::timeout)
-        m_eventLoop->pushEvent(*m_ev);
+        invokeSetter("timeout");
 }

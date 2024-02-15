@@ -1,6 +1,6 @@
 #include <GObject.h>
 #include <MainEventLoop.h>
-#include <GObjectBase.h>
+#include <GObjectRectangle.h>
 #include <algorithm>
 #include <iostream>
 
@@ -16,7 +16,7 @@ GObject::GObject(GObject *p):
     if (!m_parent)
         return;
     m_parent->m_children.push_back(this);
-    m_objectEventLoop = m_parent->m_objectEventLoop;
+//    m_objectEventLoop = m_parent->m_objectEventLoop;
     m_anchors.setParent(m_parent);
 }
 

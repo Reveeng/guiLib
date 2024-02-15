@@ -8,119 +8,118 @@ bool operator==(const Rect &lhs, const Rect &rhs){
 }
 
 
-GObjectRectangle::GObjectRectangle():
-    m_currentPosition({0,0,0,0}),
-    m_previousPosition({0,0,0,0})
+GObjectBase::GObjectBase(AbstractClass *parent):
+    AbstractClass(parent),
+    m_currentPosition({0,0,0,0})
+{
+    initSettersAndGetters();
+}
+
+GObjectBase::GObjectBase(const Rect &r, AbstractClass *parent):
+    AbstractClass(parent),
+    m_currentPosition(r)
+{
+    initSettersAndGetters();
+}
+
+GObjectBase::~GObjectBase()
 {
 
 }
 
-GObjectRectangle::GObjectRectangle(uint32_t x, uint32_t y,
-                                   uint32_t w, uint32_t h):
-    m_currentPosition({x,y,w,h}),
-    m_previousPosition(m_currentPosition)
+void GObjectBase::initSettersAndGetters()
 {
+    createObjectSetter("x", m_currentPosition.x);
+    createObjectSetter("y", m_currentPosition.y);
+    createObjectSetter("w", m_currentPosition.w);
+    createObjectSetter("h", m_currentPosition.h);
+    createObjectSetter("v", m_visible);
+    createObjectSetter("pos", m_currentPosition.x, m_currentPosition.y);
+    createObjectSetter("sizes", m_currentPosition.w, m_currentPosition.h);
 
+    createObjectGetter("x",m_currentPosition.x);
+    createObjectGetter("y",m_currentPosition.y);
+    createObjectGetter("w",m_currentPosition.w);
+    createObjectGetter("h",m_currentPosition.h);
+    createObjectGetter("v", m_visible);
 }
 
-void GObjectRectangle::setX(uint32_t x)
+void GObjectBase::setX(uint32_t x)
 {
-    if (m_currentPosition.x == x)
-        return;
-    savePosition();
-    m_currentPosition.x = x;
-    afterObjectPositionChanged();
-    savePosition();
+    invokeSetter("x", x);
 }
 
-uint32_t GObjectRectangle::x() const
+uint32_t GObjectBase::x() const
 {
-    return m_currentPosition.x;
+    return invokeGetter<uint32_t>("x");
 }
 
-void GObjectRectangle::setY(uint32_t y)
+void GObjectBase::setY(uint32_t y)
 {
-    if (m_currentPosition.y == y)
-        return;
-    savePosition();
-    m_currentPosition.y = y;
-    afterObjectPositionChanged();
-    savePosition();
+    invokeSetter("y", y);
 }
 
-uint32_t GObjectRectangle::y() const
+uint32_t GObjectBase::y() const
 {
-    return m_currentPosition.y;
+    return invokeGetter<uint32_t>("y");
 }
 
-void GObjectRectangle::setPosition(uint32_t x, uint32_t y)
+void GObjectBase::setPosition(uint32_t x, uint32_t y)
 {
-    if (m_currentPosition.x == x && m_currentPosition.y == y)
-        return;
-    savePosition();
-    m_currentPosition.x = x;
-    m_currentPosition.y = y;
-    afterObjectPositionChanged();
-    savePosition();
+    invokeSetter("pos",x,y);
 }
 
-void GObjectRectangle::setWidth(uint32_t w)
+void GObjectBase::setWidth(uint32_t w)
 {
-    if (m_currentPosition.w == w)
-        return;
-    savePosition();
-    m_currentPosition.w = w;
-    afterObjectSizesChanged();
-    savePosition();
+    invokeSetter("w",w);
 }
 
-uint32_t GObjectRectangle::width() const
+uint32_t GObjectBase::width() const
 {
-    return m_currentPosition.w;
+    return invokeGetter<uint32_t>("w");
 }
 
-void GObjectRectangle::setHeight(uint32_t h)
+void GObjectBase::setHeight(uint32_t h)
 {
-    if (m_currentPosition.h == h)
-        return;
-    savePosition();
-    m_currentPosition.h = h;
-    afterObjectSizesChanged();
-    savePosition();
+    invokeSetter("h",h);
 }
 
-uint32_t GObjectRectangle::height() const
+uint32_t GObjectBase::height() const
 {
-    return m_currentPosition.h;
+    return invokeGetter<uint32_t>("h");
 }
 
-void GObjectRectangle::setSizes(uint32_t w, uint32_t h)
+void GObjectBase::setVisible(bool v)
 {
-    if (m_currentPosition.w == w && m_currentPosition.h == h)
-        return;
-    savePosition();
-    m_currentPosition.w = w;
-    m_currentPosition.h = h;
-    afterObjectSizesChanged();
-    savePosition();
+    invokeSetter("v", v);
 }
 
-void GObjectRectangle::savePosition()
+bool GObjectBase::visible() const
 {
-    m_previousPosition = m_currentPosition;
+    return invokeGetter<bool>("v");
 }
 
-bool GObjectRectangle::isPositionChanged()
+void GObjectBase::setSizes(uint32_t w, uint32_t h)
 {
-    return !(m_currentPosition == m_previousPosition);
+    invokeSetter("sizes",w,h);
 }
 
-const Rect &GObjectRectangle::position() const
+//void GObjectBase::savePosition()
+//{
+//    m_previousPosition = m_currentPosition;
+//}
+
+bool GObjectBase::isPositionChanged()
+{
+//    return !(m_currentPosition == m_previousPosition);
+}
+
+const Rect &GObjectBase::position() const
 {
     return m_currentPosition;
 }
 
-const Rect &GObjectRectangle::previousPosition() const
+const Rect &GObjectBase::previousPosition() const
 {
-    return m_previousPosition;
+//    return m_previousPosition;
 }

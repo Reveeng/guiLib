@@ -12,7 +12,7 @@
 
 template <std::size_t I = 0, typename... Tp,
           std::enable_if_t<I == sizeof...(Tp),bool> = true>
-inline bool setter(std::tuple<Tp&...> &refs, const std::tuple<Tp...> &vals, bool isSame)
+inline bool setter(std::tuple<Tp&...> &refs, const std::tuple<Tp...> &vals, bool isSame = false)
 {
     (void)refs;
     (void)vals;
@@ -174,9 +174,11 @@ public:
 private:
     void invokeCallbacks(Args &... args)
     {
+//need to send event to AbstractClass thread if this function calls from different thread
         for (auto &pair : m_callbacksMap){
-            for (auto f : pair.second  )
+            for (auto f : pair.second ){
                 f(args...);
+            }
         }
     }
     std::map<AbstractClass *, std::vector<std::function<void(Args...)>>> m_callbacksMap;
@@ -204,6 +206,8 @@ public:
             sender->disconnect(this);
         }
     }
+
+    AbstractClass *parent(){return m_parent;}
     template<class RecObject, typename ...Args>
     static void connect(AbstractClass *sp, const std::string &key, RecObject *cp, void(RecObject::*f)(Args...))
     {
@@ -242,7 +246,7 @@ protected:
     }
 
     template <typename T,std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
-    T invokeGetter(const std::string &key){
+    T invokeGetter(const std::string &key) const{
         AbstractGetterCallable *g = m_getterMap[key];
         Getter<T> *getter = dynamic_cast<Getter<T>*>(g);
         if (!getter){
@@ -305,7 +309,7 @@ private:
 
 
     std::map<std::string, AbstractSignalCallbackConnector*> m_setterMap;
-    std::map<std::string, AbstractGetterCallable*> m_getterMap;
+    mutable std::map<std::string, AbstractGetterCallable*> m_getterMap;
 };
 
 

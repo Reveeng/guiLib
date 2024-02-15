@@ -1,7 +1,7 @@
 #ifndef GOBJECT_H
 #define GOBJECT_H
 
-#include <GObjectBase.h>
+#include <GObjectRectangle.h>
 #include <AbstractFrameBuffer.h>
 #include <GTimer.h>
 #include <GObjectAnchors.h>
@@ -56,9 +56,9 @@ protected:
     virtual void updateBuffer();
     virtual void redraw();
     void clear();
-    virtual void afterObjectPositionChanged() override;
-    virtual void afterObjectSizesChanged() override;
-    virtual void afterVisibleChanged() override;
+//    virtual void afterObjectPositionChanged() override;
+//    virtual void afterObjectSizesChanged() override;
+//    virtual void afterVisibleChanged() override;
 
     virtual void calculatePosition();
 
