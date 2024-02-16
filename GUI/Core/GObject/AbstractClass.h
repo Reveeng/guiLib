@@ -7,8 +7,8 @@
 #include <string>
 #include <type_traits>
 #include <vector>
-#include <memory>
-#include <EventLoop.h>
+#include <AbstractClassPrivate.h>
+#include <iostream>
 
 template <std::size_t I = 0, typename... Tp,
           std::enable_if_t<I == sizeof...(Tp),bool> = true>
@@ -58,12 +58,12 @@ template <typename ...Args>
 class Setter : public AbstractSetterCallable{
 
 public:
-    Setter():
-        AbstractSetterCallable(),
-        m_argSize(sizeof...(Args))
-    {
+//    Setter():
+//        AbstractSetterCallable(),
+//        m_argSize(sizeof...(Args))
+//    {
 
-    }
+//    }
     Setter(Args &... refs):
         AbstractSetterCallable(),
         m_argSize(sizeof...(Args)),
@@ -113,22 +113,20 @@ private:
     T& m_ref;
 };
 
-class AbstractClass;
-
 class AbstractSignalCallbackConnector
 {
 public:
-    AbstractSignalCallbackConnector(AbstractClass *sigp):
+    AbstractSignalCallbackConnector(AbstractClassPrivate *sigp):
         m_signalProvider(sigp)
     {
 
     }
     virtual ~AbstractSignalCallbackConnector(){}
 
-    virtual void removeAssociatedCallbacks(AbstractClass *cp) = 0;
+    virtual void removeAssociatedCallbacks(AbstractClassPrivate *cp) = 0;
 
 protected:
-    AbstractClass *m_signalProvider;
+    AbstractClassPrivate *m_signalProvider;
     AbstractSetterCallable *m_setter;
 };
 
@@ -136,7 +134,7 @@ template<typename ...Args>
 class SignalCallbackConnector : public AbstractSignalCallbackConnector
 {
 public:
-    SignalCallbackConnector(AbstractClass *sigP, Args&... args):
+    SignalCallbackConnector(AbstractClassPrivate *sigP, Args&... args):
           AbstractSignalCallbackConnector(sigP)
     {
         Setter<Args...> * set = new Setter<Args...>(args...);
@@ -158,13 +156,13 @@ public:
     }
 
 
-    void addCallback(std::function<void(Args...)> f, AbstractClass *cp = nullptr)
+    void addCallback(std::function<void(Args...)> f, AbstractClassPrivate *cp = nullptr)
     {
         auto &vec = m_callbacksMap[cp];
         vec.push_back(f);
     }
 
-    virtual void removeAssociatedCallbacks(AbstractClass *cp) override final
+    virtual void removeAssociatedCallbacks(AbstractClassPrivate *cp) override final
     {
         if (!cp)
             return;
@@ -177,22 +175,37 @@ private:
 //need to send event to AbstractClass thread if this function calls from different thread
         for (auto &pair : m_callbacksMap){
             for (auto f : pair.second ){
-                f(args...);
+                invokeCallback(pair.first, f, args...);
             }
         }
     }
-    std::map<AbstractClass *, std::vector<std::function<void(Args...)>>> m_callbacksMap;
+
+    void invokeCallback(AbstractClassPrivate *p, std::function<void(Args...)> f, Args... args)
+    {
+        if (p == nullptr){
+            f(args...);
+            return;
+        }
+
+        if (p->isCalledFromObjectThread()){
+            f(args...);
+            return;
+        }
+        auto fu = std::bind(f,args...);
+        Event<> ev(fu);
+        p->eventLoop()->pushEvent(ev);
+    }
+    std::map<AbstractClassPrivate *, std::vector<std::function<void(Args...)>>> m_callbacksMap;
 };
 
 
-class AbstractClass
+class AbstractClass : public AbstractClassPrivate
 {
 public:
     AbstractClass(AbstractClass *parent = nullptr):
-        m_parent(parent)
+        AbstractClassPrivate(parent)
     {
-        m_objectEventLoop = m_parent ? m_parent->m_objectEventLoop :
-                            std::make_shared<EventLoop>(new EventLoop());
+
     }
     ~AbstractClass()
     {
@@ -207,7 +220,7 @@ public:
         }
     }
 
-    AbstractClass *parent(){return m_parent;}
+    AbstractClass *parent(){return dynamic_cast<AbstractClass*>(m_parent);}
     template<class RecObject, typename ...Args>
     static void connect(AbstractClass *sp, const std::string &key, RecObject *cp, void(RecObject::*f)(Args...))
     {
@@ -222,7 +235,7 @@ protected:
         m_setterMap[key] = dynamic_cast<AbstractSignalCallbackConnector*>(connector);
     }
 
-    template <typename T, std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
+    template <typename T, std::enable_if_t<std::is_constructible_v<T>, bool> = true>
     void createObjectGetter(const std::string &key, T& objP)
     {
         Getter<T> *get = new Getter<T>(objP);
@@ -232,20 +245,21 @@ protected:
     template <typename ...Args>
     void invokeSetter(const std::string &key, const Args&... args){
         AbstractSignalCallbackConnector *sc = m_setterMap[key];
+        SignalCallbackConnector<Args...> *setter = dynamic_cast<SignalCallbackConnector<Args...> *>(sc);
         if (!sc)
             return;
-        SignalCallbackConnector<Args...> *setter = dynamic_cast<SignalCallbackConnector<Args...> *>(sc);
         if (m_objectEventLoop->eventLoopThredId() != std::this_thread::get_id()){
+            auto tp = std::make_tuple(args...);
             auto evF = bindHelper(&SignalCallbackConnector<Args...>::invoke, setter,
-                                std::make_tuple(args...), std::index_sequence<sizeof...(Args)>{});
-            Event<Args...> ev(evF);
+                                  tp, std::make_index_sequence<sizeof...(Args)>{});
+            Event<> ev(evF);
             m_objectEventLoop->pushEvent(ev);
         }else{
             setter->invoke(args...);
         }
     }
 
-    template <typename T,std::enable_if_t<std::is_default_constructible_v<T>, bool> = true>
+    template <typename T,std::enable_if_t<std::is_constructible_v<T>, bool> = true>
     T invokeGetter(const std::string &key) const{
         AbstractGetterCallable *g = m_getterMap[key];
         Getter<T> *getter = dynamic_cast<Getter<T>*>(g);
@@ -253,23 +267,22 @@ protected:
             T t;
             return t;
         }
-        if (m_objectEventLoop->eventLoopThredId() != std::this_thread::get_id()){
-            auto f = std::bind(&Getter<T>::invoke,getter);
-            WaitableEvent<T> ev(f);
-            m_objectEventLoop->pushEvent(ev);
-            return ev.waitEventExecution();
-        }else{
+        if (m_objectEventLoop->eventLoopThredId() == std::this_thread::get_id())
             return getter->invoke();
-        }
+
+        auto f = std::bind(&Getter<T>::invoke,getter);
+        WaitableEvent<T> ev(f);
+        m_objectEventLoop->pushEvent(ev);
+        return ev.waitEventExecution();
     }
 
     template<class RecObject, typename ...Args,
              std::enable_if_t<std::is_base_of_v<AbstractClass,RecObject>,bool> = true>
     void connect(const std::string &key, void(RecObject::*f)(Args...),RecObject *o){
         AbstractSignalCallbackConnector *sc = m_setterMap[key];
-        if (!sc)
-          return;
         SignalCallbackConnector<Args...> *setter = dynamic_cast<SignalCallbackConnector<Args...> *>(sc);
+        if (!setter)
+          return;
         auto subt = subtuple(m_placeholders,std::make_index_sequence<sizeof...(Args)>{});
         std::function<void(Args...)> func = bindHelper(f,o,subt, std::make_index_sequence<sizeof...(Args)>{});
         setter->addCallback(func, o);
@@ -291,15 +304,13 @@ protected:
 
     void disconnect(AbstractClass *receiver){
         for (auto &pair : m_setterMap){
-            pair.second->removeAssociatedCallbacks(receiver);
+            pair.second->removeAssociatedCallbacks(dynamic_cast<AbstractClassPrivate*>(receiver));
         }
     }
 
 
 private:
     std::vector<AbstractClass*> m_senders;
-    std::shared_ptr<EventLoop>  m_objectEventLoop;
-    AbstractClass *m_parent;
 
 
     std::tuple<decltype(std::placeholders::_1),

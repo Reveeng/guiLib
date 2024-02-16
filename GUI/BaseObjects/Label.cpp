@@ -10,6 +10,7 @@ Label::Label(GObject *parent):
     m_fixedSize(false),
     m_fontName("")
 {
+    initFunctions();
     LabelBuffer *b = new LabelBuffer("", FontManager::getDefaultFont());
     b->setMaximumWidth(GObject::parent()->width());
     m_objectBuffer = b;
@@ -20,6 +21,7 @@ Label::Label(const std::string &text, GObject *p):
     m_fixedSize(false),
     m_fontName("")
 {
+    initFunctions();
     LabelBuffer *b = new LabelBuffer(text, FontManager::getDefaultFont());
     b->setMaximumWidth(GObject::parent()->width());
     m_objectBuffer = b;
@@ -31,6 +33,7 @@ Label::Label(const std::string &text, const std::string &fontName,GObject* paren
     m_fixedSize(false),
     m_fontName(fontName)
 {
+    initFunctions();
     LabelBuffer *b = new LabelBuffer(text, FontManager::getFontData(fontName));
     b->setMaximumWidth(GObject::parent()->width());
     m_objectBuffer = b;
@@ -42,6 +45,7 @@ Label::Label(const std::string &txt,uint32_t mWidth, GObject *p):
     m_fixedSize(true),
     m_fontName("")
 {
+    initFunctions();
     LabelBuffer *b = new LabelBuffer(txt, FontManager::getDefaultFont());
     b->setMaximumWidth(mWidth);
     m_objectBuffer = b;
@@ -57,62 +61,22 @@ Label::~Label()
 
 void Label::changeFont(const std::string &fontName)
 {
-    auto fd = FontManager::getFontData(fontName);
-    if (!fd)
-        return;
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Label::changeFont,this, _1);
-        Event<std::string> ev(slf, fontName);
-        m_objectEventLoop->pushEvent(ev);
-        return;
-    }
-    if (m_fontName == fontName)
-        return;
-
-    LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
-    b->setFont(fd);
-    m_fontName = fontName;
-    setSizes(b->width(), b->height());
-    redraw();
+    call_setter(m_fontName,fontName);
 }
 
-std::string Label::fontName() const
+std::string Label::fontName()
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Label::fontName, this);
-        WaitableEvent<std::string> ev(slf);
-        m_objectEventLoop->pushEvent(ev);
-        return ev.waitEventExecution();
-    }
-    return m_fontName;
+    return call_getter(m_fontName);
 }
 
 void Label::setText(const std::string &t)
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Label::setText,this, _1);
-        Event<std::string> ev(slf, t);
-        m_objectEventLoop->pushEvent(ev);
-        return;
-    }
-    LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
-    if (t == b->labelData())
-        return;
-    b->setLabelData(t);
-    setSizes(b->width(), b->height());
-    redraw();
+    call_setter(m_text,t);
 }
 
-std::string Label::text() const
+std::string Label::text()
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Label::text, this);
-        WaitableEvent<std::string> ev(slf);
-        m_objectEventLoop->pushEvent(ev);
-        return ev.waitEventExecution();
-    }
-    LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
-    return b->labelData();
+    return call_getter(m_text);
 }
 
 void Label::updateBuffer()
@@ -121,6 +85,11 @@ void Label::updateBuffer()
         return;
 
     LabelBuffer *b = dynamic_cast<LabelBuffer*>(m_objectBuffer);
+    b->setLabelData(m_text);
+    auto fd = FontManager::getFontData(m_fontName);
+    if (!fd)
+        return;
+    b->setFont(fd);
     if (!m_fixedSize)
         b->setMaximumWidth(parent()->width());
     setSizes(m_objectBuffer->width(), m_objectBuffer->height());
@@ -134,4 +103,24 @@ void Label::calculatePosition()
         b->setMaximumWidth(parent()->width());
     GObject::calculatePosition();
     redraw();
+}
+
+void Label::textChanged(std::string)
+{
+    updateBuffer();
+    redraw();
+}
+
+void Label::fontChanged(std::string)
+{
+    updateBuffer();
+    redraw();
+}
+
+void Label::initFunctions()
+{
+    declare_setter_getter(m_fontName);
+    declare_setter_getter(m_text);
+    bind_callback(m_fontName,&Label::fontChanged);
+    bind_callback(m_text,&Label::textChanged);
 }

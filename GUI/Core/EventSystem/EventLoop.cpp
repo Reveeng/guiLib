@@ -6,6 +6,11 @@ EventLoop::EventLoop():
 
 }
 
+EventLoop::~EventLoop()
+{
+    stop();
+}
+
 void EventLoop::start()
 {
     m_thread = std::thread(&EventLoop::loop, this);

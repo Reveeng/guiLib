@@ -46,9 +46,14 @@ int main()
     FontManager::setDefaultFont("small");
 
     MainWindow window;
+//    Rectangle * rect =  new Rectangle(10,10,20,10, &window);
+//    rect->setPosition(20,20);
+//    rect->setPosition(20,20);
+//    window.setSizes(128,64);
 
+//    Label label = new Label("AAAA", &window);
     Button *btn = new Button("Test",&window);
-//    btn->setSizes(50,20);
+    btn->setSizes(50,20);
 //    btn->setAlignment(GObject::CenterIn);
 
     bool check = true;
@@ -57,6 +62,7 @@ int main()
 //        btn->setFocused(check);
         check = !check;
     }
+//    delete btn;
 
     return 0;
 }

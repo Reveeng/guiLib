@@ -10,6 +10,7 @@ class EventLoop : public EventQueue
 {
 public:
     EventLoop();
+    ~EventLoop();
 
     void start();
     void stop();

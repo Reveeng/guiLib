@@ -35,19 +35,17 @@ public:
     bool visible() const;
 
     void setSizes(uint32_t w, uint32_t h);
-
     void setPosition(uint32_t x, uint32_t y);
+    void setRectangle(uint32_t x, uint32_t y, uint32_t w , uint32_t h);
+    Rect rectangle() const;
+
 
 protected:
-    bool isPositionChanged();
-
-    const Rect &position() const;
-    const Rect &previousPosition() const;
-
+    virtual void positionChangedCallback(Rect r) = 0;
 
 private:
     void initSettersAndGetters();
-    Rect m_currentPosition;
+    Rect m_pos;
     bool m_visible;
 };
 

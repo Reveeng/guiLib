@@ -16,17 +16,26 @@ public:
     void setFillBackground(bool f);
     bool fillBackground() const;
 
-    void setBorderWidth(uint16_t w);
-    uint16_t borderWidth() const;
+    void setBorderWidth(uint32_t w);
+    uint32_t borderWidth() const;
 
 protected:
     virtual void updateBuffer() override;
-    uint16_t m_borderWidth;
+    uint32_t m_borderWidth;
     bool m_backgroundFill;
 
+protected://callback
+    void fillBackgroundChanged(bool);
+    void borderWidthChanged(uint32_t);
+
 private:
-    void _fillBackground();
+    void initFunctions();
+
+    void fillBackground_();
     void fillBorders();
+
+//    void fillBackgroundChangedCallback(bool f);
+//    void fillBorders();
 };
 
 #endif // RECTANGLE_H

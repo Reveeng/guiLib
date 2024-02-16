@@ -19,12 +19,11 @@ HEADERS += \
     Core/EventSystem/Event.h \
     Core/EventSystem/EventLoop.h \
     Core/EventSystem/EventQueue.h \
-    Core/EventSystem/MainEventLoop.h \
     Core/Font/FontManager.h \
     Core/GObject/AbstractClass.h \
+    Core/GObject/AbstractClassPrivate.h \
     Core/GObject/GObject.h \
     Core/GObject/GObjectAnchors.h \
-#    Core/GObject/GObjectBase.h \
     Core/GObject/GObjectRectangle.h \
     Core/GObject/GTimer.h
 
@@ -37,9 +36,9 @@ SOURCES += \
     Core/EventSystem/EventQueue.cpp \
     Core/EventSystem/MainEventLoop.cpp \
     Core/Font/FontManager.cpp \
+    Core/GObject/AbstractClassPrivate.cpp \
     Core/GObject/GObject.cpp \
     Core/GObject/GObjectAnchors.cpp \
-#    Core/GObject/GObjectBase.cpp \
     Core/GObject/GObjectRectangle.cpp \
     Core/GObject/GTimer.cpp
 

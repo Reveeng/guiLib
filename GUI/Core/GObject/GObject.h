@@ -3,13 +3,19 @@
 
 #include <GObjectRectangle.h>
 #include <AbstractFrameBuffer.h>
-#include <GTimer.h>
 #include <GObjectAnchors.h>
+#include <GTimer.h>
 #include <vector>
 
 using Coordinate = std::pair<uint32_t, uint32_t>;
 using Display::Abstraction::AbstractFrameBuffer;
 #include <iostream>
+
+#define declare_setter_getter(x) createObjectSetter(#x,x);createObjectGetter(#x,x);
+#define call_setter(x, f) invokeSetter(#x,f)
+#define call_getter(x) invokeGetter<typeof(x)>(#x);
+#define bind_callback(x, f) connect(#x, f, this);
+
 
 class GObject : public GObjectBase
 {
@@ -31,10 +37,11 @@ public:
     const std::vector<GObject*> &children() const;
 
     void setAlignment(Alignment al);
+    Alignment alignment()const;
 
-    GTimer *getTimer();
-    uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
-    void stopTimer(uint32_t id);
+//    GTimer *getTimer();
+//    uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
+//    void stopTimer(uint32_t id);
 
     template<AnchorType sT, AnchorType aT>
     void setAnchor(GObject *ref, uint32_t offset = 0){
@@ -56,9 +63,6 @@ protected:
     virtual void updateBuffer();
     virtual void redraw();
     void clear();
-//    virtual void afterObjectPositionChanged() override;
-//    virtual void afterObjectSizesChanged() override;
-//    virtual void afterVisibleChanged() override;
 
     virtual void calculatePosition();
 
@@ -68,16 +72,24 @@ protected:
 
     Display::Abstraction::AbstractFrameBuffer *m_objectBuffer;
 
+
+protected://callbacks
+    virtual void positionChangedCallback(Rect newR) override;
+    void alignmentChanged(Alignment);
+    void visibleChangedCallback(bool visible);
+
+
 private:
     GObject * m_parent;
     std::vector<GObject*> m_children;
     std::vector<GObject *> m_anchoredObject;
     Alignment m_alignment;
 
-    std::vector<GTimer*> m_timers;
-    uint32_t m_timerIdGen;
+//    std::vector<GTimer*> m_timers;
+//    uint32_t m_timerIdGen;
 
     GObjectAnchors m_anchors;
+    Rect m_prevPos;
     void calculatePositionAlignBased();
 };
 

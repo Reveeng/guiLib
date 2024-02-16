@@ -9,7 +9,6 @@ Button::Button(GObject *p):
 {
     m_backgroundFill = false;
     m_borderWidth = 1;
-    m_label->setAlignment(GObject::CenterIn);
 }
 
 Button::Button(const std::string &text, GObject *p):
@@ -18,9 +17,6 @@ Button::Button(const std::string &text, GObject *p):
 {
     m_backgroundFill = false;
     m_borderWidth = 3;
-    calculateSize();
-    updateBuffer();
-    redraw();
 }
 
 void Button::setText(const std::string &text)
@@ -37,6 +33,11 @@ std::string Button::text() const
 void Button::setFocused(bool f)
 {
     setBorderWidth(f ? 3 : 1);
+}
+
+void Button::setTextAlignment(Alignment al)
+{
+    m_label->setAlignment(al);
 }
 
 Label *Button::contentItem()

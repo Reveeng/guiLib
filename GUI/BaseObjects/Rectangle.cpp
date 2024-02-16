@@ -10,6 +10,7 @@ Rectangle::Rectangle(GObject *parent):
     m_borderWidth(0),
     m_backgroundFill(true)
 {
+    initFunctions();
     m_objectBuffer = new Buffer();
 }
 
@@ -18,6 +19,7 @@ Rectangle::Rectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
     m_borderWidth(0),
     m_backgroundFill(true)
 {
+    initFunctions();
     m_objectBuffer = new Buffer(w,h);
 }
 
@@ -26,30 +28,30 @@ Rectangle::~Rectangle()
 
 }
 
+void Rectangle::initFunctions()
+{
+//    createObjectSetter("backgroundFill", m_backgroundFill);
+//    createObjectGetter("backgroundFill", m_backgroundFill);
+//    connect("backgroundFill",&Rectangle::fillBackgroundChanged, this);
+
+//    createObjectSetter("borderWidth", m_backgroundFill);
+//    createObjectGetter("borderWidth", m_backgroundFill);
+//    connect("borderWidth",&Rectangle::borderWidthChanged, this);
+    declare_setter_getter(m_backgroundFill);
+    declare_setter_getter(m_borderWidth);
+    bind_callback(m_backgroundFill,&Rectangle::fillBackgroundChanged);
+    bind_callback(m_borderWidth, &Rectangle::borderWidthChanged);
+}
+
 void Rectangle::setFillBackground(bool f)
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Rectangle::setFillBackground, this,_1);
-        Event<bool> ev(slf,f);
-        m_objectEventLoop->pushEvent(ev);
-        return;
-    }
-    if (m_backgroundFill == f)
-        return;
-    m_backgroundFill = f;
-    updateBuffer();
-    redraw();
+//    invokeSetter("m_backgroundFill",f);
+    call_setter(m_backgroundFill,f);
 }
 
 bool Rectangle::fillBackground() const
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Rectangle::fillBackground, this);
-        WaitableEvent<bool> ev(slf);
-        m_objectEventLoop->pushEvent(ev);
-        return ev.waitEventExecution();
-    }
-    return m_backgroundFill;
+    return invokeGetter<bool>("m_backgroundFill");
 }
 
 void Rectangle::updateBuffer()
@@ -57,11 +59,23 @@ void Rectangle::updateBuffer()
     Buffer *b = dynamic_cast<Buffer*>(m_objectBuffer);
     b->setSizes(width(), height());
     fillBorders();
-    _fillBackground();
+    fillBackground_();
     GObject::updateBuffer();
 }
 
-void Rectangle::_fillBackground(){
+void Rectangle::fillBackgroundChanged(bool)
+{
+    updateBuffer();
+    redraw();
+}
+
+void Rectangle::borderWidthChanged(uint32_t)
+{
+    updateBuffer();
+    redraw();
+}
+
+void Rectangle::fillBackground_(){
     if (!m_backgroundFill){
         return;
     }
@@ -82,30 +96,14 @@ void Rectangle::_fillBackground(){
     b->draw();
 }
 
-void Rectangle::setBorderWidth(uint16_t w)
+void Rectangle::setBorderWidth(uint32_t w)
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Rectangle::setBorderWidth, this,_1);
-        Event<uint16_t> ev(slf,w);
-        m_objectEventLoop->pushEvent(ev);
-        return;
-    }
-    if (m_borderWidth == w)
-        return;
-    m_borderWidth = w;
-    updateBuffer();
-    redraw();
+    call_setter(m_borderWidth,w);
 }
 
-uint16_t Rectangle::borderWidth() const
+uint32_t Rectangle::borderWidth() const
 {
-    if (!isCalledFromMainEventLoop()){
-        auto slf = std::bind(&Rectangle::borderWidth, this);
-        WaitableEvent<uint16_t> ev(slf);
-        m_objectEventLoop->pushEvent(ev);
-        return ev.waitEventExecution();
-    }
-    return m_borderWidth;
+    return invokeGetter<uint32_t>("m_borderWidth");
 }
 
 void Rectangle::fillBorders()

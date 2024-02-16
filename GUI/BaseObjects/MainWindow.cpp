@@ -1,7 +1,6 @@
 #include "MainWindow.h"
 #include <Buffer.h>
 #include <DisplayManagerDebug.h>
-#include <MainEventLoop.h>
 
 using Display::Buffer;
 
@@ -15,13 +14,10 @@ MainWindow::MainWindow() :
         return;
     m_objectBuffer = new Buffer(m_displayManager.displayWidth(), m_displayManager.displayHeight());
     setSizes(m_displayManager.displayWidth(), m_displayManager.displayHeight());
-    MainEventLoop::start();
-    m_objectEventLoop = MainEventLoop::getPointer();
     m_objCounter = 1;
 }
 
 MainWindow::~MainWindow(){
-    MainEventLoop::stop();
 }
 
 void MainWindow::redraw(){

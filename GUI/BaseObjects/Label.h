@@ -15,19 +15,24 @@ public:
     ~Label();
 
     void changeFont(const std::string &fontName);
-    std::string fontName() const;
+    std::string fontName();
 
     void setText(const std::string &t);
-    std::string text() const;
+    std::string text();
 
 protected:
-
     virtual void updateBuffer() override;
     virtual void calculatePosition() override;
 
+protected://callbacks
+    void textChanged(std::string text);
+    void fontChanged(std::string font);
+
 private:
+    void initFunctions();
     bool m_fixedSize;
     std::string m_fontName;
+    std::string m_text;
 };
 
 #endif // LABEL_H

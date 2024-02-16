@@ -15,6 +15,7 @@ public:
     std::string text() const;
 
     void setFocused(bool f);
+    void setTextAlignment(Alignment al);
 
 
 protected:

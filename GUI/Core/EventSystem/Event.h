@@ -62,6 +62,7 @@ private:
 };
 
 
+//work only with atomic types
 template <typename T>
 class WaitableEvent : public AbstractEvent{
 public:
@@ -107,7 +108,8 @@ public:
 
     virtual void executeCallback() override
     {
-        *m_valueStorage = m_eventCallback();
+        T* ptr = m_valueStorage.get();
+        *ptr = m_eventCallback();
         m_syncCV->notify_all();
     }
     T waitEventExecution()

@@ -10,14 +10,16 @@ bool operator==(const Rect &lhs, const Rect &rhs){
 
 GObjectBase::GObjectBase(AbstractClass *parent):
     AbstractClass(parent),
-    m_currentPosition({0,0,0,0})
+    m_pos({0,0,0,0}),
+    m_visible(true)
 {
     initSettersAndGetters();
 }
 
 GObjectBase::GObjectBase(const Rect &r, AbstractClass *parent):
     AbstractClass(parent),
-    m_currentPosition(r)
+    m_pos(r),
+    m_visible(true)
 {
     initSettersAndGetters();
 }
@@ -29,97 +31,97 @@ GObjectBase::~GObjectBase()
 
 void GObjectBase::initSettersAndGetters()
 {
-    createObjectSetter("x", m_currentPosition.x);
-    createObjectSetter("y", m_currentPosition.y);
-    createObjectSetter("w", m_currentPosition.w);
-    createObjectSetter("h", m_currentPosition.h);
-    createObjectSetter("v", m_visible);
-    createObjectSetter("pos", m_currentPosition.x, m_currentPosition.y);
-    createObjectSetter("sizes", m_currentPosition.w, m_currentPosition.h);
-
-    createObjectGetter("x",m_currentPosition.x);
-    createObjectGetter("y",m_currentPosition.y);
-    createObjectGetter("w",m_currentPosition.w);
-    createObjectGetter("h",m_currentPosition.h);
-    createObjectGetter("v", m_visible);
+    createObjectSetter("rect", m_pos);
+    createObjectGetter("rect", m_pos);
+    createObjectSetter("visible",m_visible);
+    createObjectGetter("visible",m_visible);
+    connect("rect", &GObjectBase::positionChangedCallback, this);
 }
 
 void GObjectBase::setX(uint32_t x)
 {
-    invokeSetter("x", x);
+    Rect nr = m_pos;
+    nr.x = x;
+    invokeSetter("rect", nr);
 }
 
 uint32_t GObjectBase::x() const
 {
-    return invokeGetter<uint32_t>("x");
+    Rect r = invokeGetter<Rect>("rect");
+    return r.x;
 }
 
 void GObjectBase::setY(uint32_t y)
 {
-    invokeSetter("y", y);
+    Rect nr = m_pos;
+    nr.y = y;
+    invokeSetter("rect", nr);
 }
 
 uint32_t GObjectBase::y() const
 {
-    return invokeGetter<uint32_t>("y");
+    Rect r = invokeGetter<Rect>("rect");
+    return r.y;
 }
 
 void GObjectBase::setPosition(uint32_t x, uint32_t y)
 {
-    invokeSetter("pos",x,y);
+    Rect nr = m_pos;
+    nr.x = x;
+    nr.y = y;
+    invokeSetter("rect", nr);
+}
+
+void GObjectBase::setRectangle(uint32_t x, uint32_t y, uint32_t w, uint32_t h)
+{
+    invokeSetter("rect",Rect{x,y,w,h});
+}
+
+Rect GObjectBase::rectangle() const
+{
+    return invokeGetter<Rect>("rect");
 }
 
 void GObjectBase::setWidth(uint32_t w)
 {
-    invokeSetter("w",w);
+    Rect nr = m_pos;
+    nr.w = w;
+    invokeSetter("rect",nr);
 }
 
 uint32_t GObjectBase::width() const
 {
-    return invokeGetter<uint32_t>("w");
+    Rect r = invokeGetter<Rect>("rect");
+    return r.w;
 }
 
 void GObjectBase::setHeight(uint32_t h)
 {
-    invokeSetter("h",h);
+    Rect nr = m_pos;
+    nr.h = h;
+    invokeSetter("rect", nr);
 }
 
 uint32_t GObjectBase::height() const
 {
-    return invokeGetter<uint32_t>("h");
+    Rect r = invokeGetter<Rect>("rect");
+    return r.h;
 }
 
 void GObjectBase::setVisible(bool v)
 {
-    invokeSetter("v", v);
+    invokeSetter("visible", v);
 }
 
 bool GObjectBase::visible() const
 {
-    return invokeGetter<bool>("v");
+    return invokeGetter<bool>("visible");
 }
 
 void GObjectBase::setSizes(uint32_t w, uint32_t h)
 {
-    invokeSetter("sizes",w,h);
-}
-
-//void GObjectBase::savePosition()
-//{
-//    m_previousPosition = m_currentPosition;
-//}
-
-bool GObjectBase::isPositionChanged()
-{
-//    return !(m_currentPosition == m_previousPosition);
-}
-
-const Rect &GObjectBase::position() const
-{
-    return m_currentPosition;
-}
-
-const Rect &GObjectBase::previousPosition() const
-{
-//    return m_previousPosition;
+    Rect nr = m_pos;
+    nr.w = w;
+    nr.h = h;
+    invokeSetter("rect",nr);
 }
