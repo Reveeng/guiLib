@@ -6,6 +6,9 @@ bool operator==(const Rect &lhs, const Rect &rhs){
            lhs.w == rhs.w &&
            lhs.h == rhs.h;
 }
+bool operator!=(const Rect &lhs, const Rect &rhs){
+    return !(lhs == rhs);
+}
 
 
 GObjectBase::GObjectBase(AbstractClass *parent):
@@ -26,7 +29,6 @@ GObjectBase::GObjectBase(const Rect &r, AbstractClass *parent):
 
 GObjectBase::~GObjectBase()
 {
-
 }
 
 void GObjectBase::initSettersAndGetters()
@@ -36,11 +38,13 @@ void GObjectBase::initSettersAndGetters()
     createObjectSetter("visible",m_visible);
     createObjectGetter("visible",m_visible);
     connect("rect", &GObjectBase::positionChangedCallback, this);
+
+    createObjectSetter("deleted");
 }
 
 void GObjectBase::setX(uint32_t x)
 {
-    Rect nr = m_pos;
+    Rect nr = rectangle();
     nr.x = x;
     invokeSetter("rect", nr);
 }
@@ -66,7 +70,7 @@ uint32_t GObjectBase::y() const
 
 void GObjectBase::setPosition(uint32_t x, uint32_t y)
 {
-    Rect nr = m_pos;
+    Rect nr = rectangle();
     nr.x = x;
     nr.y = y;
     invokeSetter("rect", nr);
@@ -84,7 +88,7 @@ Rect GObjectBase::rectangle() const
 
 void GObjectBase::setWidth(uint32_t w)
 {
-    Rect nr = m_pos;
+    Rect nr = rectangle();
     nr.w = w;
     invokeSetter("rect",nr);
 }
@@ -97,7 +101,7 @@ uint32_t GObjectBase::width() const
 
 void GObjectBase::setHeight(uint32_t h)
 {
-    Rect nr = m_pos;
+    Rect nr = rectangle();
     nr.h = h;
     invokeSetter("rect", nr);
 }
@@ -120,7 +124,8 @@ bool GObjectBase::visible() const
 
 void GObjectBase::setSizes(uint32_t w, uint32_t h)
 {
-    Rect nr = m_pos;
+
+    Rect nr = rectangle();
     nr.w = w;
     nr.h = h;
     invokeSetter("rect",nr);

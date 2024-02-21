@@ -108,8 +108,8 @@ public:
      */
     virtual uint32_t bufferSize() const override final;
 
-    //begun func
-    void draw();
+    //debug func
+    virtual void draw() override;
 
     /**
      * @brief set all bytes to zero. Function dont free allocated memory

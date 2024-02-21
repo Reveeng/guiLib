@@ -15,9 +15,7 @@ GObject::GObject(GObject *p):
 {
     declare_setter_getter(m_alignment);
     bind_callback(m_alignment,&GObject::alignmentChanged);
-//    createObjectSetter("alignment", m_alignment);
-//    createObjectGetter("alignment", m_alignment);
-//    connect("alignment", &GObject::alignmentChanged, this);
+    connect("aboutToDelete", &GObject::onDeleteCallback, this);
     m_prevPos = rectangle();
 
     if (!m_parent)
@@ -35,6 +33,7 @@ GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
 {
     declare_setter_getter(m_alignment);
     bind_callback(m_alignment,&GObject::alignmentChanged);
+    connect("aboutToDelete", &GObject::onDeleteCallback, this);
     if (!m_parent)
         return;
     m_parent->m_children.push_back(this);
@@ -50,14 +49,6 @@ GObject::~GObject()
     for (auto child : m_children){
         child->m_parent = nullptr;
         delete child;
-    }
-    if (m_parent){
-        auto pred = [this](GObject *o){return this == o;};
-        auto begIter = m_parent->m_children.begin();
-        auto endIter = m_parent->m_children.end();
-        auto iter = std::find_if(begIter, endIter,pred);
-        if (iter != endIter)
-            m_parent->m_children.erase(iter);
     }
 
     delete m_objectBuffer;
@@ -84,11 +75,32 @@ const std::vector<GObject *> &GObject::children() const
 
 void GObject::setAlignment(Alignment al)
 {
-    invokeSetter<int>("m_alignment",static_cast<int>(al));
+    call_setter(m_alignment, static_cast<int>(al));
 }
 
-GObject::Alignment GObject::alignment() const{
-    return static_cast<GObject::Alignment>(invokeGetter<int>("m_alignment"));
+GObject::Alignment GObject::alignment(){
+    return static_cast<Alignment>(call_getter(m_alignment));
+}
+
+const AbstractFrameBuffer *GObject::buffer()
+{
+    return m_objectBuffer;
+}
+
+void GObject::setAnchor(AnchorType t1, GObject *ref, AnchorType t2, uint32_t offset)
+{
+    if (ref != m_parent &&ref->parent() != m_parent){
+        std::cout << "Try to connect unconnectable objects";
+        return;
+    }
+    GObjectBase *b = dynamic_cast<GObjectBase*>(ref);
+    switch(t1){
+        break; case AnchorType::Top: m_anchors.setTopAnchor(t2,b,offset);
+        break; case AnchorType::Bottom: m_anchors.setBottomAnchor(t2,b,offset);
+        break; case AnchorType::Right: m_anchors.setRightAnchor(t2,b,offset);
+        break; case AnchorType::Left: m_anchors.setLeftAnchor(t2,b,offset);
+        break; default: return;
+    }
 }
 
 
@@ -142,7 +154,8 @@ void GObject::redraw()
     if (!visible() || !m_parent)
         return;
     Rect pos = rectangle();
-    m_parent->m_objectBuffer->clearRectangle(m_prevPos.x,m_prevPos.y, m_prevPos.w, m_prevPos.h);
+    if (pos != m_prevPos)
+        m_parent->m_objectBuffer->clearRectangle(m_prevPos.x,m_prevPos.y, m_prevPos.w, m_prevPos.h);
     m_parent->m_objectBuffer->mergeData(m_objectBuffer,pos.x, pos.y);
     m_parent->redraw();
 }
@@ -178,22 +191,44 @@ void GObject::visibleChangedCallback(bool v){
     }
 }
 
+void GObject::onDeleteCallback(AbstractClass *o)
+{
+    std::cout << "call callback" << '\n';
+    if (m_parent){
+        m_parent->removeChild(this);
+    }
+    clear();
+}
+
+bool GObject::isPositionChanged(Rect &rect)
+{
+    return rect.x != m_prevPos.x || rect.y != m_prevPos.y;
+}
+
+bool GObject::isSizesChanged(Rect &rect)
+{
+    return rect.w != m_prevPos.w || rect.h != m_prevPos.h;
+}
+
 void GObject::calculatePosition()
 {
     if (m_alignment != NoAlign){
         calculatePositionAlignBased();
-        return;
     }
-    m_anchors.calculatePosition();
+    if (m_anchors.hasAnchor())
+        m_anchors.calculatePosition();
 }
 
-void GObject::removedAnchoredObject(GObject *o)
+void GObject::removeChild(GObject *obj)
 {
-    auto pred = [o](GObjectBase *r){return o == r;};
-    auto iter = std::find_if(m_anchoredObject.begin(), m_anchoredObject.end(), pred);
-    if (iter == m_anchoredObject.end())
-        return;
-    m_anchoredObject.erase(iter);
+    auto pred = [obj](GObject *o){return obj == o;};
+
+    m_children.erase(std::remove_if(m_children.begin(), m_children.end(), pred));
+//    auto begIter = m_children.begin();
+//    auto endIter = m_children.end();
+//    auto iter = std::find_if(begIter, endIter,pred);
+//    if (iter != endIter)
+//        m_parent->m_children.erase(iter);
 }
 
 void GObject::calculatePositionAlignBased()
@@ -225,24 +260,37 @@ void GObject::setBuffer(Display::Abstraction::AbstractFrameBuffer *buf)
 
 void GObject::positionChangedCallback(Rect newR)
 {
-    if (m_prevPos.x != newR.x || m_prevPos.y != newR.y ||
-        m_prevPos.w != newR.w || m_prevPos.h != newR.h)
+
+    bool sCh = isSizesChanged(newR);
+    bool posCh = isPositionChanged(newR);
+    if (sCh || posCh)
     {
-        for (auto anchored : m_anchoredObject)
-            anchored->calculatePosition();
+//        m_anchoredObject.calculatePositions();
     }
-    if (m_prevPos.w != newR.w || m_prevPos.h != newR.h){
-        for (auto child : m_children)
-            child->calculatePosition();
+    if (sCh){
+        calculatePosition();
+        m_children.calculatePositions();
     }
-    calculatePosition();
     updateBuffer();
+
     redraw();
     m_prevPos = newR;
 }
 
-void GObject::alignmentChanged(Alignment)
+void GObject::alignmentChanged(int)
 {
     calculatePosition();
     redraw();
+}
+
+void GObjectContainer::calculatePositions()
+{
+    for (auto ref : *this){
+        ref->calculatePosition();
+    }
+}
+
+void GObjectContainer::print_data()
+{
+
 }

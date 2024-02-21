@@ -32,6 +32,8 @@ void EventLoop::loop()
 {
     while (!m_stopFlag.load()){
         waitEvent();
+        if (size() == 0)
+            continue;
         std::vector<AbstractEvent*> events;
         getEvents(events);
         for (auto ev : events){

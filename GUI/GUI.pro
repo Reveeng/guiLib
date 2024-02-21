@@ -1,7 +1,7 @@
 QT -= core gui
 
 INCLUDEPATH += ../DisplayAbstraction ./Core/EventSystem ./Core/Font \
-               ./Core/GObject ./BaseObjects
+               ./Core/GObject ./BaseObjects ./Core/GObject/AbstractClass
 
 TEMPLATE = lib
 CONFIG += staticlib c++17
@@ -20,12 +20,14 @@ HEADERS += \
     Core/EventSystem/EventLoop.h \
     Core/EventSystem/EventQueue.h \
     Core/Font/FontManager.h \
-    Core/GObject/AbstractClass.h \
-    Core/GObject/AbstractClassPrivate.h \
+    Core/GObject/AbstractClass/AbstractClass.h \
+    Core/GObject/AbstractClass/AbstractClassPrivate.h \
+    Core/GObject/AbstractClass/ThreadSafeMap.h \
+    Core/GObject/AbstractClass/invokable.h \
     Core/GObject/GObject.h \
     Core/GObject/GObjectAnchors.h \
     Core/GObject/GObjectRectangle.h \
-    Core/GObject/GTimer.h
+    Core/GObject/GTimer.h \
 
 SOURCES += \
     BaseObjects/Label.cpp \
@@ -36,7 +38,7 @@ SOURCES += \
     Core/EventSystem/EventQueue.cpp \
     Core/EventSystem/MainEventLoop.cpp \
     Core/Font/FontManager.cpp \
-    Core/GObject/AbstractClassPrivate.cpp \
+    Core/GObject/AbstractClass/AbstractClassPrivate.cpp \
     Core/GObject/GObject.cpp \
     Core/GObject/GObjectAnchors.cpp \
     Core/GObject/GObjectRectangle.cpp \

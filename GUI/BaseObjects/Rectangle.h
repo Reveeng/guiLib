@@ -34,8 +34,6 @@ private:
     void fillBackground_();
     void fillBorders();
 
-//    void fillBackgroundChangedCallback(bool f);
-//    void fillBorders();
 };
 
 #endif // RECTANGLE_H

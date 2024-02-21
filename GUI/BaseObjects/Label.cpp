@@ -19,7 +19,8 @@ Label::Label(GObject *parent):
 Label::Label(const std::string &text, GObject *p):
     GObject(p),
     m_fixedSize(false),
-    m_fontName("")
+    m_fontName(""),
+    m_text(text)
 {
     initFunctions();
     LabelBuffer *b = new LabelBuffer(text, FontManager::getDefaultFont());
@@ -31,7 +32,8 @@ Label::Label(const std::string &text, GObject *p):
 Label::Label(const std::string &text, const std::string &fontName,GObject* parent):
     GObject(parent),
     m_fixedSize(false),
-    m_fontName(fontName)
+    m_fontName(fontName),
+    m_text(text)
 {
     initFunctions();
     LabelBuffer *b = new LabelBuffer(text, FontManager::getFontData(fontName));
@@ -43,7 +45,8 @@ Label::Label(const std::string &text, const std::string &fontName,GObject* paren
 Label::Label(const std::string &txt,uint32_t mWidth, GObject *p):
     GObject(p),
     m_fixedSize(true),
-    m_fontName("")
+    m_fontName(""),
+    m_text(txt)
 {
     initFunctions();
     LabelBuffer *b = new LabelBuffer(txt, FontManager::getDefaultFont());

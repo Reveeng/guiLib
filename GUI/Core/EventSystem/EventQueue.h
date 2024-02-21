@@ -2,7 +2,8 @@
 #define EVENTQUEUE_H
 
 #include <Event.h>
-#include <vector>
+#include <condition_variable>
+#include <thread>
 
 
 class EventQueue
@@ -21,12 +22,14 @@ public:
     }
 
     void getEvents(std::vector<AbstractEvent*> &cont);
+    std::size_t size();
 
 private:
     std::vector<AbstractEvent*> m_events;
     std::mutex m_dataMutex;
-    int m_dropWaitReadFd;
-    int m_dropWaitWriteFd;
+
+    std::mutex m_cvMutex;
+    std::condition_variable m_cv;
 };
 
 #endif // EVENTQUEUE_H

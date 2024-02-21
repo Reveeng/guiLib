@@ -11,6 +11,9 @@ typedef struct r{
     uint32_t h;
 } Rect;
 
+bool operator==(const Rect &r1, const Rect &r2);
+bool operator!=(const Rect &r1, const Rect &r2);
+
 class GObjectBase : public AbstractClass
 {
 public:

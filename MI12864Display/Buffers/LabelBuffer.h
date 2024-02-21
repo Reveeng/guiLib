@@ -29,6 +29,8 @@ public:
 
     virtual uint32_t bufferSize() const override final;
 
+    virtual void draw() override;
+
 private:
     std::string m_labelData;
     const FontData *m_font;

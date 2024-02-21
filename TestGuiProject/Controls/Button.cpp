@@ -5,18 +5,25 @@
 
 Button::Button(GObject *p):
     Rectangle(p),
+    m_focused(false),
     m_label(new Label(this))
 {
     m_backgroundFill = false;
     m_borderWidth = 1;
+    declare_setter_getter(m_focused);
+    bind_callback(m_focused,&Button::focusedChangedCallback);
 }
 
 Button::Button(const std::string &text, GObject *p):
     Rectangle(p),
+    m_focused(false),
     m_label(new Label(text,MainWindow::displayWidth(), this))
 {
     m_backgroundFill = false;
-    m_borderWidth = 3;
+    m_borderWidth = 1;
+    declare_setter_getter(m_focused);
+    bind_callback(m_focused,&Button::focusedChangedCallback);
+    calculateSize();
 }
 
 void Button::setText(const std::string &text)
@@ -32,12 +39,22 @@ std::string Button::text() const
 
 void Button::setFocused(bool f)
 {
-    setBorderWidth(f ? 3 : 1);
+    call_setter(m_focused,f);
+}
+
+bool Button::focused(){
+    return call_getter(m_focused);
 }
 
 void Button::setTextAlignment(Alignment al)
 {
     m_label->setAlignment(al);
+}
+
+void Button::focusedChangedCallback(bool f)
+{
+    setBorderWidth(f ? 3 : 1);
+    calculateSize();
 }
 
 Label *Button::contentItem()

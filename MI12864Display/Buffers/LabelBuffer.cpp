@@ -1,5 +1,6 @@
 #include "LabelBuffer.h"
 #include <FontData.h>
+#include <iostream>
 
 namespace Display{
 LabelBuffer::LabelBuffer(const std::string &data,
@@ -71,5 +72,10 @@ uint32_t LabelBuffer::bufferSize() const
     if (!m_font)
         return 0;
     return m_font->symbolWidth()*m_font->symbolHeight()*m_labelData.size()/8;
+}
+
+void LabelBuffer::draw()
+{
+    std::cout << "label buffer \n";
 }
 }

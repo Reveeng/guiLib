@@ -6,8 +6,6 @@
 #include <FontData.h>
 #include <font_small.h>
 
-//#include <Rectangle.h>
-//#include <Label.h>
 #include <MainWindow.h>
 
 using namespace std;
@@ -33,6 +31,11 @@ void systemSignalProccess(int sig)
     }
 }
 
+enum Enum{
+    AA,
+    BB
+};
+
 int Testfunction(){
     return 2;
 }
@@ -45,24 +48,27 @@ int main()
     FontManager::registerFont("small", font_small());
     FontManager::setDefaultFont("small");
 
-    MainWindow window;
-//    Rectangle * rect =  new Rectangle(10,10,20,10, &window);
-//    rect->setPosition(20,20);
-//    rect->setPosition(20,20);
-//    window.setSizes(128,64);
+    MainWindow *window = new MainWindow();
+//    Rectangle * rect = new Rectangle(0,2,10,10, &window);
+//    rect->setPosition(10,10);
 
-//    Label label = new Label("AAAA", &window);
-    Button *btn = new Button("Test",&window);
-    btn->setSizes(50,20);
-//    btn->setAlignment(GObject::CenterIn);
 
-    bool check = true;
+    Button *btn = new Button("Test",window);
+    btn->setAlignment(GObject::HCenter);
+    btn->setAnchor(Top,window,Top,5);
+
+    Button *sbtn = new Button("Test2",window);
+    sbtn->setAlignment(GObject::HCenter);
+    sbtn->setAnchor(Top,btn, Bottom,4);
+
+    btn->deleteLater();
     while (!stopFlag.load()){
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-//        btn->setFocused(check);
-        check = !check;
+//        btn->setFocused(true);
     }
+    window->deleteLater();
 //    delete btn;
+//    delete sbtn;
 
     return 0;
 }

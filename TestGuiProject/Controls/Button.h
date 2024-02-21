@@ -15,14 +15,18 @@ public:
     std::string text() const;
 
     void setFocused(bool f);
+    bool focused();
+
     void setTextAlignment(Alignment al);
 
 
 protected:
+    void focusedChangedCallback(bool f);
     Label *contentItem();
 
 private:
     void calculateSize();
+    bool m_focused;
     Label *m_label;
 };
 

@@ -18,9 +18,13 @@ MainWindow::MainWindow() :
 }
 
 MainWindow::~MainWindow(){
+
 }
 
 void MainWindow::redraw(){
+    for (auto child : children()){
+        m_objectBuffer->mergeData(child->buffer(), child->x(), child->y());
+    }
     m_displayManager.drawBuffer(m_objectBuffer);
 }
 

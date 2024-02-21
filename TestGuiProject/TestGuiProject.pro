@@ -13,11 +13,11 @@ unix:!macx: LIBS += -L$$OUT_PWD/../GUI/ -lGUI
 
 INCLUDEPATH += $$PWD/../GUI $$PWD/../GUI/BaseObjects \
                $$PWD/../GUI/Core/Font $$PWD/../GUI/Core/GObject \
-               $$PWD/../GUI/Core/EventSystem
+               $$PWD/../GUI/Core/EventSystem $$PWD/../GUI/Core/GObject/AbstractClass
 
 DEPENDPATH += $$PWD/../GUI $$PWD/../GUI/BaseObjects \
               $$PWD/../GUI/Core/Font $$PWD/../GUI/Core/GObject \
-              $$PWD/../GUI/Core/EventSystem
+              $$PWD/../GUI/Core/EventSystem $$PWD/../GUI/Core/GObject/AbstractClass
 
 unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/../GUI/libGUI.a
 

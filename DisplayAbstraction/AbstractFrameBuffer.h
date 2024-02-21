@@ -21,6 +21,8 @@ namespace Display
             virtual uint32_t height() const = 0 ;
 
             virtual uint32_t bufferSize() const = 0;
+
+            virtual void draw() = 0;
         };
     }
 }

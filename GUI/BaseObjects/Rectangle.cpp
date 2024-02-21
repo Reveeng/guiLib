@@ -30,13 +30,6 @@ Rectangle::~Rectangle()
 
 void Rectangle::initFunctions()
 {
-//    createObjectSetter("backgroundFill", m_backgroundFill);
-//    createObjectGetter("backgroundFill", m_backgroundFill);
-//    connect("backgroundFill",&Rectangle::fillBackgroundChanged, this);
-
-//    createObjectSetter("borderWidth", m_backgroundFill);
-//    createObjectGetter("borderWidth", m_backgroundFill);
-//    connect("borderWidth",&Rectangle::borderWidthChanged, this);
     declare_setter_getter(m_backgroundFill);
     declare_setter_getter(m_borderWidth);
     bind_callback(m_backgroundFill,&Rectangle::fillBackgroundChanged);
@@ -92,8 +85,8 @@ void Rectangle::fillBackground_(){
         }
         data += b->width();
     }
-    std::cout << "after fill background" << '\n';
-    b->draw();
+//    std::cout << "after fill background" << '\n';
+//    b->draw();
 }
 
 void Rectangle::setBorderWidth(uint32_t w)
@@ -141,6 +134,6 @@ void Rectangle::fillBorders()
         std::memset(data+m_borderWidth,fillerByte,b->width()-m_borderWidth*2);
         data += b->width();
     }
-    std::cout << "after fill border" << '\n';
-    b->draw();
+//    std::cout << "after fill border" << '\n';
+//    b->draw();
 }

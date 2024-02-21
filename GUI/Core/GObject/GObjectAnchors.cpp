@@ -1,6 +1,12 @@
 #include "GObjectAnchors.h"
 #include <utility>
 
+bool operator==(const Anchor &a1, const Anchor &a2){
+    return a1.objectRef() == a2.objectRef() &&
+           a1.refType() == a2.refType() &&
+           a1.offset() == a2.offset();
+}
+
 Anchor::Anchor(GObjectBase *ref):
     m_ref(ref),
     m_refType(None),
@@ -9,7 +15,7 @@ Anchor::Anchor(GObjectBase *ref):
 
 }
 
-Anchor::Anchor(Anchor &o):
+Anchor::Anchor(const Anchor &o):
     m_ref(o.m_ref),
     m_refType(o.m_refType),
     m_offset(o.m_offset)
@@ -25,12 +31,19 @@ Anchor::Anchor(Anchor &&o):
 
 }
 
+//Anchor &Anchor::operator=(const Anchor &)
+//{
+
+//    if (
+//    return *this;
+//}
+
 void Anchor::setObjectRef(GObjectBase *ref)
 {
     m_ref = ref;
 }
 
-void Anchor::setRerType(AnchorType type)
+void Anchor::setRefType(AnchorType type)
 {
     m_refType = type;
 }
@@ -82,9 +95,23 @@ uint32_t Anchor::refY(GObjectBase *p)
 /**/
 
 GObjectAnchors::GObjectAnchors(GObjectBase *self):
+    AbstractClass(self),
     m_self(self)
 {
+    createObjectSetter("left", m_anchors[Left]);
+    createObjectSetter("right", m_anchors[Right]);
+    createObjectSetter("top", m_anchors[Top]);
+    createObjectSetter("bottom", m_anchors[Bottom]);
 
+    createObjectGetter("left", m_anchors[Left]);
+    createObjectGetter("right", m_anchors[Right]);
+    createObjectGetter("top", m_anchors[Top]);
+    createObjectGetter("bottom", m_anchors[Bottom]);
+
+    connect("left",&GObjectAnchors::anchorChangeCallback, this);
+    connect("right",&GObjectAnchors::anchorChangeCallback, this);
+    connect("top",&GObjectAnchors::anchorChangeCallback, this);
+    connect("bottom",&GObjectAnchors::anchorChangeCallback, this);
 }
 
 void GObjectAnchors::setParent(GObjectBase *parent)
@@ -92,25 +119,95 @@ void GObjectAnchors::setParent(GObjectBase *parent)
     m_parent = parent;
 }
 
+bool GObjectAnchors::hasAnchor()
+{
+    bool has = false;
+    for (auto &a : m_anchors){
+        has |= a.hasAnchor();
+    }
+    return has;
+}
+
+void GObjectAnchors::setTopAnchor(AnchorType aType, GObjectBase *ref, uint32_t offset)
+{
+    Anchor an(ref);
+    an.setRefType(aType);
+    an.setOffset(offset);
+    connect(ref, "aboutToDelete", this,&GObjectAnchors::anchoredObjectDeleted);
+    invokeSetter("top", an);
+}
+
+void GObjectAnchors::setBottomAnchor(AnchorType aType, GObjectBase *ref, uint32_t offset)
+{
+    Anchor an(ref);
+    an.setRefType(aType);
+    an.setOffset(offset);
+    connect(ref, "aboutToDelete", this,&GObjectAnchors::anchoredObjectDeleted);
+    invokeSetter("bottom", an);
+}
+
+void GObjectAnchors::setRightAnchor(AnchorType aType, GObjectBase *ref, uint32_t offset)
+{
+    Anchor an(ref);
+    an.setRefType(aType);
+    an.setOffset(offset);
+    connect(ref, "aboutToDelete", this,&GObjectAnchors::anchoredObjectDeleted);
+    invokeSetter("right", an);
+}
+
+void GObjectAnchors::setLeftAnchor(AnchorType aType, GObjectBase *ref, uint32_t offset)
+{
+    Anchor an(ref);
+    an.setRefType(aType);
+    an.setOffset(offset);
+    connect(ref, "aboutToDelete", this,&GObjectAnchors::anchoredObjectDeleted);
+    invokeSetter("left", an);
+}
+
+void GObjectAnchors::anchorChangeCallback(Anchor)
+{
+    calculatePosition();
+}
+
+void GObjectAnchors::anchoredObjectDeleted(AbstractClass *o)
+{
+    auto f = [o](const Anchor &a){return a.objectRef() == o;};
+    auto iter = std::find_if(m_anchors.begin(), m_anchors.end() , f);
+    if (iter == m_anchors.end())
+        return;
+    iter->setObjectRef(nullptr);
+    calculatePosition();
+}
+
 void GObjectAnchors::calculatePosition()
 {
     uint32_t x = calculateX();
     uint32_t y = calculateY();
-    m_self->setPosition(x,y);
     uint32_t w = calculateWidth();
     uint32_t h = calculateHeight();
-    m_self->setSizes(w,h);
+    m_self->setRectangle(x,y,w,h);
 }
 
 
-Anchor &GObjectAnchors::get(AnchorType t){
-    return m_anchors[t];
+Anchor GObjectAnchors::get(AnchorType t){
+    switch(t){
+        case Top:
+            return invokeGetter<Anchor>("top");
+        case Bottom:
+            return invokeGetter<Anchor>("bottom");
+        case Right:
+            return invokeGetter<Anchor>("right");
+        case Left:
+            return invokeGetter<Anchor>("left");
+        default:
+        return Anchor();
+    }
 }
 
 uint32_t GObjectAnchors::calculateX()
 {
-    auto &right = get(Right);
-    auto &left = get(Left);
+    auto right = get(Right);
+    auto left = get(Left);
     if (!right.hasAnchor() && !left.hasAnchor())
         return m_self->x();
     if (left.hasAnchor()){
@@ -122,8 +219,8 @@ uint32_t GObjectAnchors::calculateX()
 
 uint32_t GObjectAnchors::calculateY()
 {
-    auto &top = get(Top);
-    auto &bot = get(Bottom);
+    auto top = get(Top);
+    auto bot = get(Bottom);
     if (!top.hasAnchor() && !bot.hasAnchor())
         return m_self->y();
 
@@ -136,8 +233,8 @@ uint32_t GObjectAnchors::calculateY()
 
 uint32_t GObjectAnchors::calculateWidth()
 {
-    auto &right = get(Right);
-    auto &left = get(Left);
+    auto right = get(Right);
+    auto left = get(Left);
     if (!right.hasAnchor() || !left.hasAnchor())
         return m_self->width();
     uint32_t lx = left.refX(m_parent)+left.offset();
@@ -148,8 +245,8 @@ uint32_t GObjectAnchors::calculateWidth()
 
 uint32_t GObjectAnchors::calculateHeight()
 {
-    auto &top = get(Top);
-    auto &bot = get(Bottom);
+    auto top = get(Top);
+    auto bot = get(Bottom);
     if (!top.hasAnchor() || !bot.hasAnchor())
         return m_self->height();
     uint32_t ty = top.refY(m_parent)+top.offset();
