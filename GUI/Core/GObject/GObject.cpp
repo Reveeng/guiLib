@@ -42,10 +42,10 @@ GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
 
 GObject::~GObject()
 {
-//    for (auto timer : m_timers){
-//        timer->stop();
-//        delete timer;
-//    }
+    for (auto timer : m_timers){
+        timer->stop();
+        delete timer;
+    }
     for (auto child : m_children){
         child->m_parent = nullptr;
         delete child;
@@ -111,35 +111,33 @@ void GObject::setAnchor(AnchorType t1, GObject *ref, AnchorType t2, uint32_t off
 //    return timer;
 //}
 
-//uint32_t GObject::startTimer(std::function<void ()> f, uint32_t time, bool isSingleShot)
-//{
-//    GTimer *timer = new GTimer(m_objectEventLoop, m_timerIdGen);
-//    timer->setSingleShot(isSingleShot);
-//    timer->setDetached(true);
-//    if (isSingleShot){
-//        auto rebindF = [f, timer](){f();delete timer;};
-//        auto rb = std::bind(rebindF);
-//        timer->setTimeoutFunction(rb);
-//    }else{
-//        m_timers.push_back(timer);
-//        timer->setTimeoutFunction(f);
-//    }
-//    timer->start(time);
-//    m_timerIdGen += 1;
-//    return isSingleShot ? 0 : timer->id();
-//}
+uint32_t GObject::startTimer(std::function<void ()> f, uint32_t time, bool isSingleShot)
+{
+    GTimer *timer = new GTimer(m_timerIdGen);
+    timer->setSingleShot(isSingleShot);
+    timer->setDetached(true);
+    if (isSingleShot){
+        GObject::connect(timer,"timeout", f);
+    }else{
+        GObject::connect(timer, "timeout", f);
+        m_timers.push_back(timer);
+    }
+    timer->start(time);
+    m_timerIdGen += 1;
+    return isSingleShot ? 0 : timer->id();
+}
 
-//void GObject::stopTimer(uint32_t id)
-//{
-//    auto pred = [id](GTimer* t){return t->id() == id;};
-//    auto iter = std::find_if(m_timers.begin(), m_timers.end(), pred);
-//    if (iter == m_timers.end())
-//        return;
-//    (*iter)->stop();
-//    GTimer *t = *iter;
-//    m_timers.erase(iter);
-//    delete t;
-//}
+void GObject::stopTimer(uint32_t id)
+{
+    auto pred = [id](GTimer* t){return t->id() == id;};
+    auto iter = std::find_if(m_timers.begin(), m_timers.end(), pred);
+    if (iter == m_timers.end())
+        return;
+    (*iter)->stop();
+    GTimer *t = *iter;
+    m_timers.erase(iter);
+    delete t;
+}
 
 void GObject::updateBuffer()
 {
@@ -168,21 +166,6 @@ void GObject::clear(){
     m_parent->redraw();
 }
 
-//void GObject::afterObjectPositionChanged()
-//{
-//    redraw();
-//}
-
-//void GObject::afterObjectSizesChanged(){
-//    updateBuffer();
-//    for (auto child : m_children)
-//        child->calculatePosition();
-//    for (auto anchored : m_anchoredObject)
-//        anchored->calculatePosition();
-//    calculatePosition();
-//    redraw();
-//}
-
 void GObject::visibleChangedCallback(bool v){
     if (v){
         redraw();
@@ -193,7 +176,7 @@ void GObject::visibleChangedCallback(bool v){
 
 void GObject::onDeleteCallback(AbstractClass *o)
 {
-    std::cout << "call callback" << '\n';
+    (void)o;
     if (m_parent){
         m_parent->removeChild(this);
     }
@@ -224,11 +207,6 @@ void GObject::removeChild(GObject *obj)
     auto pred = [obj](GObject *o){return obj == o;};
 
     m_children.erase(std::remove_if(m_children.begin(), m_children.end(), pred));
-//    auto begIter = m_children.begin();
-//    auto endIter = m_children.end();
-//    auto iter = std::find_if(begIter, endIter,pred);
-//    if (iter != endIter)
-//        m_parent->m_children.erase(iter);
 }
 
 void GObject::calculatePositionAlignBased()

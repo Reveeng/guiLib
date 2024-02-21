@@ -2,8 +2,8 @@
 #include <thread>
 #include <chrono>
 
-GTimer::GTimer(AbstractClass *parent,uint32_t id):
-    AbstractClass(parent),
+GTimer::GTimer(uint32_t id):
+    AbstractClass(),
     m_isSingleShot(false),
     m_isDetached(false),
     m_time(1000),
@@ -17,29 +17,22 @@ GTimer::~GTimer()
     stop();
 }
 
-
 bool GTimer::start()
 {
-    if (m_timerThread.joinable())
-        return false;
-
+    m_objectEventLoop->start();
     if (m_isDetached){
-        startDetached();
+        auto f = std::bind(&GTimer::__start, this);
+        Event<> e(f);
+        m_objectEventLoop->pushEvent(e);
         return true;
     }
-    if (m_isSingleShot)
-        singleShotF();
-    else
-        repeatedF();
-
+    __start();
     return true;
 
 }
 
  bool GTimer::start(uint32_t msec)
 {
-     if (m_timerThread.joinable())
-         return false;
     m_time = msec;
     return start();
 }
@@ -47,8 +40,7 @@ bool GTimer::start()
 void GTimer::stop()
 {
     m_cancelCv.notify_one();
-    if (m_timerThread.joinable())
-        m_timerThread.join();
+    m_objectEventLoop->stop();
 }
 
 void GTimer::setSingleShot(bool s)
@@ -74,13 +66,6 @@ bool GTimer::isDetached() const
 uint32_t GTimer::id() const{
     return m_id;
 }
-void GTimer::startDetached()
-{
-    if (m_isSingleShot)
-        m_timerThread = std::thread(&GTimer::singleShotF, this);
-    else
-        m_timerThread = std::thread(&GTimer::repeatedF, this);
-}
 
 void GTimer::repeatedF()
 {
@@ -89,13 +74,22 @@ void GTimer::repeatedF()
         std::unique_lock<std::mutex> g(m_mutex);
         st = m_cancelCv.wait_for(g, std::chrono::milliseconds(m_time));
         if (st == std::cv_status::timeout)
-            invokeSetter("timeout");
+            invokeSignal<>("timeout");
     }
+}
+
+void GTimer::__start()
+{
+    if (m_isSingleShot)
+        singleShotF();
+    else
+        repeatedF();
 }
 
 void GTimer::singleShotF(){
     std::unique_lock<std::mutex> g(m_mutex);
     std::cv_status st = m_cancelCv.wait_for(g,std::chrono::milliseconds(m_time));
     if (st == std::cv_status::timeout)
-        invokeSetter("timeout");
+        invokeSignal<>("timeout");
+    deleteLater();
 }

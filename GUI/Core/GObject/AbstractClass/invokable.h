@@ -45,16 +45,6 @@ auto subtuple(const std::tuple<T...>&t, std::index_sequence<I...>){
   return std::make_tuple(std::get<I>(t)...);
 }
 
-//template <typename ...T>
-//struct and_:std::true_type{};
-
-//template <typename T,typename... Ts>
-//struct and_<T,Ts...>:std::conditional_t<T::value, and_<Ts...>,std::false_type>{};
-
-//template<typename ...T>
-//using allCopyConstructible = and_<std::is_copy_constructible<T>...>;
-
-
 class AbstractSetterCallable{
 public:
     virtual ~AbstractSetterCallable(){};
@@ -82,7 +72,7 @@ public:
         return m_argsSize;
     }
 
-    void addCallback(std::function<void(Args...)> &f, AbstractClassPrivate *o)
+    void addCallback(std::function<void(Args...)> f, AbstractClassPrivate *o =  nullptr)
     {
         auto &cbs = m_callbacks[o];
         cbs.emplace_back(f);
@@ -178,95 +168,5 @@ public:
 private:
     T& m_ref;
 };
-
-//class AbstractSignalCallbackConnector
-//{
-//public:
-//    AbstractSignalCallbackConnector(AbstractClassPrivate *sigp):
-//        m_signalProvider(sigp)
-//    {
-
-//    }
-//    virtual ~AbstractSignalCallbackConnector(){}
-
-//    virtual void removeAssociatedCallbacks(AbstractClassPrivate *cp) = 0;
-
-//protected:
-//    AbstractClassPrivate *m_signalProvider;
-//    AbstractSetterCallable *m_setter;
-//};
-
-//template<typename ...Args>
-//class SignalCallbackConnector : public AbstractSignalCallbackConnector
-//{
-//public:
-//    SignalCallbackConnector(AbstractClassPrivate *sigP, Args&... args):
-//          AbstractSignalCallbackConnector(sigP)
-//    {
-//        Setter<Args...> * set = new Setter<Args...>(args...);
-//        m_setter = dynamic_cast<AbstractSetterCallable*>(set);
-//    }
-
-//    ~SignalCallbackConnector(){
-//        delete m_setter;
-//    }
-
-//    void invoke(Args ... args)
-//    {
-//        Setter<Args...> *set = dynamic_cast<Setter<Args...> *>(m_setter);
-//        if (!set)
-//            return;
-//        bool changed = set->invoke(args...);
-//        if (changed)
-//            set->invokeSignal();
-//    }
-
-//    void invokeSignal(){
-//        Setter<Args...> *set = dynamic_cast<Setter<Args...>*>(m_setter);
-//        if (!set)
-//            return;
-//        set->invokeSignal();
-//    }
-
-
-//    void addCallback(std::function<void(Args...)> f, AbstractClassPrivate *cp = nullptr)
-//    {
-//        auto &vec = m_callbacksMap[cp];
-//        vec.push_back(f);
-//    }
-
-//    virtual void removeAssociatedCallbacks(AbstractClassPrivate *cp) override final
-//    {
-//        if (!cp)
-//            return;
-//        m_callbacksMap.erase(cp);
-//    }
-
-//private:
-//    void invokeCallbacks(Args &... args)
-//    {
-//        for (auto &pair : m_callbacksMap){
-//            for (auto f : pair.second ){
-//                invokeCallback(pair.first, f, args...);
-//            }
-//        }
-//    }
-
-//    void invokeCallback(AbstractClassPrivate *p, std::function<void(Args...)> f, Args... args)
-//    {
-//        if (p == nullptr){
-//            f(args...);
-//            return;
-//        }
-
-//        if (p->isCalledFromObjectThread()){
-//            f(args...);
-//            return;
-//        }
-//        auto fu = std::bind(f,args...);
-//        Event<> ev(fu);
-//        p->eventLoop()->pushEvent(ev);
-//    }
-//};
 
 #endif // INVOKABLE_H

@@ -13,6 +13,8 @@ EventLoop::~EventLoop()
 
 void EventLoop::start()
 {
+    if (m_thread.joinable())
+        return;
     m_thread = std::thread(&EventLoop::loop, this);
 }
 

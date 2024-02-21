@@ -150,8 +150,9 @@ protected:
         Setter<Args...> *setter = dynamic_cast<Setter<Args...> *>(sc);
         if (!setter)
             return;
-        std::function<void(Args...)> func(f);
-        setter->addCallback(func);
+//        auto subt = subtuple(m_placeholders,std::make_index_sequence<sizeof...(Args)>{});
+//        std::function<void(Args...)> func = bindHelper(f,subt, std::make_index_sequence<sizeof...(Args)>{});
+        setter->addCallback(f);
     }
 
     void disconnect(AbstractClass *receiver){
@@ -165,10 +166,10 @@ protected:
         setter->removeAssociatedCallbacks(receiver);
     }
 
+    AbstractClass *m_this;
 
 private:
     std::vector<AbstractClass*> m_senders;
-    AbstractClass *m_this;
     void __delete()
     {
         delete this;

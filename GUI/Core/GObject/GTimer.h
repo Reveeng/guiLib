@@ -8,7 +8,7 @@
 
 class GTimer : public AbstractClass{
 public:
-    GTimer(AbstractClass *parent = nullptr,uint32_t timerId = 0);
+    GTimer(uint32_t timerId = 0);
     ~GTimer();
 
     bool start();
@@ -24,17 +24,15 @@ public:
     uint32_t id() const;
 
 protected:
-    void startDetached();
-
     void singleShotF();
     void repeatedF();
 
 private:
+    void __start();
     bool m_isSingleShot;
     bool m_isDetached;
     uint32_t m_time;
 
-    std::thread m_timerThread;
     std::condition_variable m_cancelCv;
     std::mutex m_mutex;
     uint32_t m_id;

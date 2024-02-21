@@ -7,6 +7,10 @@ using Display::Buffer;
 Display::DisplayManagerDebug MainWindow::m_displayManager(256,0,true);
 int MainWindow::m_objCounter = 0;
 
+void testFunction(){
+    std::cout << "test timer function" << '\n';
+}
+
 MainWindow::MainWindow() :
     GObject(nullptr)
 {
@@ -15,6 +19,7 @@ MainWindow::MainWindow() :
     m_objectBuffer = new Buffer(m_displayManager.displayWidth(), m_displayManager.displayHeight());
     setSizes(m_displayManager.displayWidth(), m_displayManager.displayHeight());
     m_objCounter = 1;
+    startTimer(testFunction, 1000);
 }
 
 MainWindow::~MainWindow(){

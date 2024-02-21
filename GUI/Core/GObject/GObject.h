@@ -86,8 +86,9 @@ public:
     const Display::Abstraction::AbstractFrameBuffer *buffer();
 
 //    GTimer *getTimer();
-//    uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
-//    void stopTimer(uint32_t id);
+
+    uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
+    void stopTimer(uint32_t id);
 
     void setAnchor(AnchorType t1, GObject *ref, AnchorType t2, uint32_t offset);
 
@@ -125,8 +126,8 @@ private:
 
     int m_alignment;
 
-//    std::vector<GTimer*> m_timers;
-//    uint32_t m_timerIdGen;
+    std::vector<GTimer*> m_timers;
+    uint32_t m_timerIdGen;
 
     GObjectAnchors m_anchors;
     Rect m_prevPos;
