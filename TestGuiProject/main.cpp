@@ -61,14 +61,11 @@ int main()
     sbtn->setAlignment(GObject::HCenter);
     sbtn->setAnchor(Top,btn, Bottom,4);
 
-    btn->deleteLater();
     while (!stopFlag.load()){
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
-//        btn->setFocused(true);
+        btn->setFocused(true);
     }
     window->deleteLater();
-//    delete btn;
-//    delete sbtn;
 
     return 0;
 }

@@ -150,8 +150,6 @@ protected:
         Setter<Args...> *setter = dynamic_cast<Setter<Args...> *>(sc);
         if (!setter)
             return;
-//        auto subt = subtuple(m_placeholders,std::make_index_sequence<sizeof...(Args)>{});
-//        std::function<void(Args...)> func = bindHelper(f,subt, std::make_index_sequence<sizeof...(Args)>{});
         setter->addCallback(f);
     }
 

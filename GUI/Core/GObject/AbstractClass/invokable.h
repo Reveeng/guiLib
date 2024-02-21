@@ -128,9 +128,7 @@ public:
     {
         auto vals = std::make_tuple(val...);
         if (!setter(this->m_dataRefs, vals)){
-            m_cbMutex.lock();
             invokeSignal();
-            m_cbMutex.unlock();
         }
     }
 
