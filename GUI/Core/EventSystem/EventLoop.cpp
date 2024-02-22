@@ -32,6 +32,10 @@ std::thread::id EventLoop::eventLoopThredId()
 
 void EventLoop::loop()
 {
+     run();
+}
+
+void EventLoop::run(){
     while (!m_stopFlag.load()){
         waitEvent();
         if (size() == 0)

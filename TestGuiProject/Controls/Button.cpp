@@ -12,6 +12,7 @@ Button::Button(GObject *p):
     m_borderWidth = 0;
     declare_setter_getter(m_focused);
     bind_callback(m_focused,&Button::focusedChangedCallback);
+    createObjectSetter("clicked");
 }
 
 Button::Button(const std::string &text, GObject *p):
@@ -23,6 +24,7 @@ Button::Button(const std::string &text, GObject *p):
     m_borderWidth = 0;
     declare_setter_getter(m_focused);
     bind_callback(m_focused,&Button::focusedChangedCallback);
+    createObjectSetter("clicked");
     calculateSize();
 }
 
@@ -49,6 +51,11 @@ bool Button::focused(){
 void Button::setTextAlignment(Alignment al)
 {
     m_label->setAlignment(al);
+}
+
+void Button::emitClickedSignal()
+{
+    invokeSignal("clicked");
 }
 
 void Button::focusedChangedCallback(bool f)

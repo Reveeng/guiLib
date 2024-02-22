@@ -19,6 +19,7 @@ public:
 
     void setTextAlignment(Alignment al);
 
+    void emitClickedSignal();
 
 protected:
     void focusedChangedCallback(bool f);

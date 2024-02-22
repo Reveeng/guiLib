@@ -17,6 +17,9 @@ public:
 
     std::thread::id eventLoopThredId();
 
+protected:
+    virtual void run();
+
 private:
     void loop();
     void clearQueue(std::vector<AbstractEvent *> &ev);
