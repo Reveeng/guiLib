@@ -126,7 +126,7 @@ protected:
     uint32_t m_height;
 
 private:
-    void appendPage(char *startIntData,const char *startExtData, uint32_t offset, uint32_t w);
+    void appendPage(char *startIntData,const char *startExtData, uint32_t offset, uint32_t w, bool isInv);
 
     bool allocateMemory();
     void clearMemory();

@@ -30,6 +30,7 @@ public:
 
     virtual uint32_t bufferSize() const override final;
 
+
     virtual void draw() override;
 
 private:

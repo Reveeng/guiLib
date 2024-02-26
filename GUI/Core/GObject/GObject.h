@@ -24,44 +24,6 @@ public:
     void print_data();
 };
 
-//class AnchoredObjectsContainer : public AbstractClass
-//{
-//public:
-//    AnchoredObjectsContainer(AbstractClass *parent):
-//        AbstractClass(parent),
-//        m_tempObj(nullptr),
-//        m_isPush(false)
-//    {
-//        createObjectSetter("obj",m_tempObj, m_isPush);
-//        connect("obj",&AnchoredObjectsContainer::pushNewObject);
-//    }
-
-//    void pushObject(GObject *obj)
-//    {
-//        invokeSetter("obj", obj, true);
-//    }
-//    void removeObject(GObject *obj)
-//    {
-//        invokeSetter("obj", obj, false);
-//    }
-
-//private:
-//    void pushNewObject(GObject *o, bool isPush)
-//    {
-//        if (!isPush){
-//            auto iter = std::find(m_objects.begin(), m_objects.end(), o);
-//            if (iter == m_objects.end())
-//                return;
-//            m_objects.erase(iter);
-//            return;
-//        }
-//        m_objects.push_back(o);
-//    }
-//    GObject *m_tempObj;
-//    bool m_isPush;
-//    std::vector<GObject*> m_objects;
-//};
-
 class GObject : public GObjectBase
 {
 public:
@@ -83,9 +45,11 @@ public:
 
     void setAlignment(Alignment al);
     Alignment alignment();
-    const Display::Abstraction::AbstractFrameBuffer *buffer();
 
-//    GTimer *getTimer();
+    void setInversion(bool inv);
+    bool inversion() const;
+
+    const Display::Abstraction::AbstractFrameBuffer *buffer();
 
     uint32_t startTimer(std::function<void()> f,uint32_t time, bool isSingleShot = false);
     void stopTimer(uint32_t id);
@@ -111,6 +75,7 @@ protected://callbacks
     void visibleChangedCallback(bool visible);
 
     void onDeleteCallback(AbstractClass *o);
+    void inverseChanged(bool isinv);
 
 protected:
     bool isPositionChanged(Rect &rect);
@@ -125,6 +90,7 @@ private:
     GObjectContainer m_anchoredObjects;
 
     int m_alignment;
+    bool m_inverse;
 
     std::vector<GTimer*> m_timers;
     uint32_t m_timerIdGen;

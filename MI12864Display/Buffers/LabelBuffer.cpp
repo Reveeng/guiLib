@@ -45,6 +45,16 @@ void LabelBuffer::setLabelData(const std::string &data)
     m_labelData = data;
 }
 
+//void LabelBuffer::setInverse(bool inv)
+//{
+//    m_isInverse = inv;
+//}
+
+//bool LabelBuffer::isInverse() const
+//{
+//    return m_isInverse;
+//}
+
 DataContainer LabelBuffer::data() const
 {
     if (!m_font)

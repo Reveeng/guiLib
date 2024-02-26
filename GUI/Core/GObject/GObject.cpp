@@ -14,8 +14,10 @@ GObject::GObject(GObject *p):
     m_anchors(this)
 {
     declare_setter_getter(m_alignment);
+    declare_setter_getter(m_inverse);
     bind_callback(m_alignment,&GObject::alignmentChanged);
     connect("aboutToDelete", &GObject::onDeleteCallback, this);
+    bind_callback(m_inverse, &GObject::inverseChanged);
     m_prevPos = rectangle();
 
     if (!m_parent)
@@ -32,8 +34,10 @@ GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
     m_prevPos({x,y,w,h})
 {
     declare_setter_getter(m_alignment);
+    declare_setter_getter(m_inverse);
     bind_callback(m_alignment,&GObject::alignmentChanged);
     connect("aboutToDelete", &GObject::onDeleteCallback, this);
+    bind_callback(m_inverse, &GObject::inverseChanged);
     if (!m_parent)
         return;
     m_parent->m_children.push_back(this);
@@ -80,6 +84,16 @@ void GObject::setAlignment(Alignment al)
 
 GObject::Alignment GObject::alignment(){
     return static_cast<Alignment>(call_getter(m_alignment));
+}
+
+void GObject::setInversion(bool inv)
+{
+    call_setter(m_inverse, inv);
+}
+
+bool GObject::inversion() const
+{
+    return invokeGetter<bool>("m_inversion");
 }
 
 const AbstractFrameBuffer *GObject::buffer()
@@ -181,6 +195,13 @@ void GObject::onDeleteCallback(AbstractClass *o)
         m_parent->removeChild(this);
     }
     clear();
+}
+
+void GObject::inverseChanged(bool isinv)
+{
+    m_objectBuffer->setInverse(isinv);
+    clear();
+    redraw();
 }
 
 bool GObject::isPositionChanged(Rect &rect)

@@ -50,10 +50,13 @@ int main()
     FontManager::setDefaultFont("small");
 
     MainWindow *window = new MainWindow();
+    Label *label = new Label("AAAAA", window);
+    label->setInversion(true);
+//    label->setIn
 //    Rectangle * rect = new Rectangle(0,2,10,10, &window);
 //    rect->setPosition(10,10);
-    PlainText text(window->width(), window->height(), window);
-    text.setText("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAclablsabla");
+//    PlainText text(window->width(), window->height(), window);
+//    text.setText("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAclablsabla");
 
 //    Button *btn = new Button("Test",window);
 //    btn->setAlignment(GObject::HCenter);

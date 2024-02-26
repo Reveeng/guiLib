@@ -132,14 +132,23 @@ DataContainer Buffer::data() const
     return DataContainer(m_buffer,false);
 }
 
-void Buffer::appendPage(char *startIntData, const char *startExtData, uint32_t offset, uint32_t w)
+void Buffer::appendPage(char *startIntData,
+                        const char *startExtData,
+                        uint32_t offset, uint32_t w,
+                        bool isInv)
 {
     for (uint32_t widx = 0; widx < w; ++widx){
         char shiftedByte = (startExtData[widx] << offset);
-        *(startIntData+widx) |= shiftedByte;
+        if (!isInv)
+            *(startIntData+widx) |= shiftedByte;
+        else
+            *(startIntData+widx) |= ~shiftedByte;
         if (offset > 0 && offset < 8){
             char byte = (0xff >> (8-offset))&(startExtData[widx] >> (8-offset));
-            *(startIntData+m_width+widx) |= byte;
+            if (!isInv)
+                *(startIntData+m_width+widx) |= byte;
+            else
+                *(startIntData+m_width+widx) |= ~byte;
         }
     }
 }
@@ -162,7 +171,7 @@ void Buffer::mergeData(const AbstractFrameBuffer *b, uint32_t x, uint32_t y)
         char* startByte = m_buffer+startPagePos*m_width+x;
         const char *bufSByte = data+hidx*b->width();
         uint32_t w = b->width()+x > m_width ? m_width-x : b->width();
-        appendPage(startByte, bufSByte, shift,w);
+        appendPage(startByte, bufSByte, shift,w, b->isInverse());
         startPagePos += 1;
     }
 }

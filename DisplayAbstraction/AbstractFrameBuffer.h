@@ -21,8 +21,19 @@ namespace Display
             virtual uint32_t height() const = 0 ;
 
             virtual uint32_t bufferSize() const = 0;
+            bool isInverse() const
+            {
+                return m_isInverse;
+            };
+            void setInverse(bool isInv)
+            {
+                m_isInverse = isInv;
+            }
+
 
             virtual void draw() = 0;
+        protected:
+            bool m_isInverse;
         };
     }
 }
