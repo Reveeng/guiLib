@@ -6,6 +6,7 @@ INCLUDEPATH += ./Controls
 
 SOURCES += \
     Controls/Button.cpp \
+    Controls/PlainText.cpp \
     main.cpp
 
 
@@ -31,4 +32,5 @@ DEPENDPATH += $$PWD/../MI12864Display $$PWD/../MI12864Display/Buffers \
 unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/../MI12864Display/libMI12864Display.a
 
 HEADERS += \
-    Controls/Button.h
+    Controls/Button.h \
+    Controls/PlainText.h

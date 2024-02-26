@@ -20,6 +20,7 @@ using namespace Display;
 #include <functional>
 
 #include <Button.h>
+#include <PlainText.h>
 
 static std::atomic<bool> stopFlag(false);
 
@@ -51,19 +52,25 @@ int main()
     MainWindow *window = new MainWindow();
 //    Rectangle * rect = new Rectangle(0,2,10,10, &window);
 //    rect->setPosition(10,10);
+    PlainText text(window->width(), window->height(), window);
+    text.setText("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAclablsabla");
 
+//    Button *btn = new Button("Test",window);
+//    btn->setAlignment(GObject::HCenter);
+//    btn->setAnchor(Top,window,Top,5);
 
-    Button *btn = new Button("Test",window);
-    btn->setAlignment(GObject::HCenter);
-    btn->setAnchor(Top,window,Top,5);
+//    Button *sbtn = new Button("Test2",window);
+//    sbtn->setAlignment(GObject::HCenter);
+//    sbtn->setAnchor(Top,btn, Bottom,4);
 
-    Button *sbtn = new Button("Test2",window);
-    sbtn->setAlignment(GObject::HCenter);
-    sbtn->setAnchor(Top,btn, Bottom,4);
-
+//    int counter = 0;
     while (!stopFlag.load()){
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        btn->setFocused(true);
+        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+//        counter = counter < 10 ? counter+1:counter-1;
+//        if (counter < 10)
+//            text.increaseCursorPosition();
+//        else
+//        text.decreaseCursorPosition();
     }
     window->deleteLater();
 

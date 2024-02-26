@@ -243,7 +243,7 @@ void GObject::positionChangedCallback(Rect newR)
     bool posCh = isPositionChanged(newR);
     if (sCh || posCh)
     {
-//        m_anchoredObject.calculatePositions();
+        m_anchoredObjects.calculatePositions();
     }
     if (sCh){
         calculatePosition();

@@ -17,6 +17,7 @@ public:
     static void registerFont(const std::string &key,const Display::FontData &data);
     static const Display::FontData *getFontData(const std::string &key);
     static const Display::FontData *getDefaultFont();
+    static const std::string &getDefaultFontName();
     static void setDefaultFont(const std::string &key);
 
 private:

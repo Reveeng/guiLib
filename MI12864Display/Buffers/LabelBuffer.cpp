@@ -3,9 +3,17 @@
 #include <iostream>
 
 namespace Display{
+LabelBuffer::LabelBuffer():
+    m_font(nullptr),
+    m_maxWidth(1024)
+{
+
+}
+
 LabelBuffer::LabelBuffer(const std::string &data,
                          const FontData *font):
     m_labelData(data),
+    m_font(nullptr),
     m_maxWidth(1024)
 {
     if (font)

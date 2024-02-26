@@ -34,6 +34,12 @@ const FontData *FontManager::getDefaultFont()
     return getFontData(manager.m_defaultKey);
 }
 
+const std::string &FontManager::getDefaultFontName()
+{
+    FontManager &manager = getInstance();
+    return manager.m_defaultKey;
+}
+
 void FontManager::setDefaultFont(const std::string &key)
 {
     FontManager &manager = getInstance();

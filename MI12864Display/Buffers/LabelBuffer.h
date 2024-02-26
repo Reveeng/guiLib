@@ -10,6 +10,7 @@ using Abstraction::DataContainer;
 class LabelBuffer : public Abstraction::AbstractFrameBuffer
 {
 public:
+    LabelBuffer();
     LabelBuffer(const std::string &data, const FontData *font = nullptr);
     ~LabelBuffer();
 
