@@ -6,6 +6,8 @@ INCLUDEPATH += ./Controls ./Icons
 
 SOURCES += \
     Controls/Button.cpp \
+    Controls/Menu.cpp \
+    Controls/MenuButton.cpp \
     Controls/PlainText.cpp \
     Icons/CheckIcon.cpp \
     Icons/DownTriangle.cpp \
@@ -15,6 +17,8 @@ SOURCES += \
 
 HEADERS += \
     Controls/Button.h \
+    Controls/Menu.h \
+    Controls/MenuButton.h \
     Controls/PlainText.h \
     Icons/CheckIcon.h \
     Icons/DownTriangle.h \

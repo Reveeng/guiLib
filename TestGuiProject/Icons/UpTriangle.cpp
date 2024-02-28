@@ -9,6 +9,7 @@ UpTriangle::UpTriangle(GObject *parent) :
     Display::Buffer *buf = new Display::Buffer(8,6);
     buf->setStaticData(triangle, 9, 5);
     m_objectBuffer = buf;
+    setSizes(9,5);
 }
 
 UpTriangle::~UpTriangle()

@@ -11,6 +11,7 @@ GObject::GObject(GObject *p):
     m_objectBuffer(nullptr),
     m_parent(p),
     m_alignment(NoAlign),
+    m_inverse(false),
     m_anchors(this)
 {
     declare_setter_getter(m_alignment);
@@ -30,6 +31,7 @@ GObject::GObject(uint32_t x, uint32_t y, uint32_t w, uint32_t h,GObject *p):
     GObjectBase({x,y,w,h}, p),
     m_parent(p),
     m_alignment(NoAlign),
+    m_inverse(false),
     m_anchors(this),
     m_prevPos({x,y,w,h})
 {
@@ -157,13 +159,18 @@ void GObject::updateBuffer()
 {
     for (auto child : m_children){
         child->updateBuffer();
-        m_objectBuffer->mergeData(child->m_objectBuffer, child->x(), child->y());
+        if (child->visible())
+            m_objectBuffer->mergeData(child->m_objectBuffer, child->x(), child->y());
+        else
+            m_objectBuffer->clearRectangle(child->x(), child->y(), child->width(), child->height());
     }
 }
 
 void GObject::redraw()
 {
     if (!visible() || !m_parent)
+        return;
+    if (!m_parent->m_objectBuffer)
         return;
     Rect pos = rectangle();
     if (pos != m_prevPos)

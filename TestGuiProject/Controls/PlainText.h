@@ -3,6 +3,8 @@
 
 #include <LabelBuffer.h>
 #include <GObject.h>
+#include <UpTriangle.h>
+#include <DownTriangle.h>
 
 class VectorLabel : public std::vector<Display::LabelBuffer*>
 {
@@ -54,10 +56,14 @@ protected:
 
 private:
     void initFunction();
+    void createTriangles();
 
     void calculateLineCount();
     void updateLinesProperty();
     void setDataToBuffers();
+
+    UpTriangle *m_upTr;
+    DownTriangle *m_downTr;
 
     uint32_t m_cursorPosition;
 

@@ -22,6 +22,12 @@ using namespace Display;
 #include <Button.h>
 #include <PlainText.h>
 
+//#include <UpTriangle.h>
+//#include <DownTriangle.h>
+//#include <CheckIcon.h>
+
+#include <Menu.h>
+
 static std::atomic<bool> stopFlag(false);
 
 
@@ -50,30 +56,17 @@ int main()
     FontManager::setDefaultFont("small");
 
     MainWindow *window = new MainWindow();
-    Label *label = new Label("AAAAA", window);
-    label->setInversion(true);
-//    label->setIn
-//    Rectangle * rect = new Rectangle(0,2,10,10, &window);
-//    rect->setPosition(10,10);
-//    PlainText text(window->width(), window->height(), window);
-//    text.setText("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAclablsabla");
 
-//    Button *btn = new Button("Test",window);
-//    btn->setAlignment(GObject::HCenter);
-//    btn->setAnchor(Top,window,Top,5);
+    Menu *menu =  new Menu(10,2,window);
+    menu->setWidth(window->width());
+    menu->setAnchor(Top,window,Top,7);
+    menu->setAnchor(Bottom, window,Bottom, 5);
 
-//    Button *sbtn = new Button("Test2",window);
-//    sbtn->setAlignment(GObject::HCenter);
-//    sbtn->setAnchor(Top,btn, Bottom,4);
+    menu->addButton("AA");
+    menu->addButton("BB");
 
-//    int counter = 0;
     while (!stopFlag.load()){
-        std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-//        counter = counter < 10 ? counter+1:counter-1;
-//        if (counter < 10)
-//            text.increaseCursorPosition();
-//        else
-//        text.decreaseCursorPosition();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
     window->deleteLater();
 

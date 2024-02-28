@@ -129,7 +129,10 @@ char *Buffer::dataPtr()
 
 DataContainer Buffer::data() const
 {
-    return DataContainer(m_buffer,false);
+    if (m_stBuffer)
+        return DataContainer(m_stBuffer);
+    else
+        return DataContainer(m_buffer, false);
 }
 
 void Buffer::appendPage(char *startIntData,

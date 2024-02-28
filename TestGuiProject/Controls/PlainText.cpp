@@ -12,6 +12,7 @@ PlainText::PlainText(GObject *p) :
     m_fontName(FontManager::getDefaultFontName())
 {
     initFunction();
+    createTriangles();
 }
 
 PlainText::PlainText(uint32_t w, uint32_t h, GObject *p):
@@ -20,8 +21,9 @@ PlainText::PlainText(uint32_t w, uint32_t h, GObject *p):
     m_fontName(FontManager::getDefaultFontName())
 {
     m_sData.setMaxWidth(width()/FontManager::getFontData(m_fontName)->symbolWidth());
-    calculateLineCount();
     initFunction();
+    createTriangles();
+    calculateLineCount();
 }
 
 PlainText::~PlainText()
@@ -53,12 +55,15 @@ void PlainText::decreaseCursorPosition()
 
 void PlainText::updateBuffer()
 {
-    uint32_t ypos = 0;
+    m_upTr->setVisible(m_cursorPosition != 0);
+    m_downTr->setVisible(m_cursorPosition+1 != m_sData.linesSize()-m_lines.size());
+    uint32_t ypos = m_upTr->height()+1;
     const Display::FontData * d = FontManager::getFontData(m_fontName);
     for (auto l : m_lines){
         m_objectBuffer->mergeData(dynamic_cast<AbstractFrameBuffer*>(l),0,ypos);
         ypos += d->symbolHeight();
     }
+    GObject::updateBuffer();
 }
 
 void PlainText::textChanged(std::string text)
@@ -125,11 +130,24 @@ void PlainText::initFunction()
     bind_callback(m_cursorPosition, &PlainText::cursorPositionChanged);
 }
 
+void PlainText::createTriangles()
+{
+    m_upTr = new UpTriangle(this);
+    m_downTr = new DownTriangle(this);
+
+    m_upTr->setAlignment(GObject::HCenter);
+    m_upTr->setAnchor(Top,this,Top,0);
+
+    m_downTr->setAlignment(GObject::HCenter);
+    m_downTr->setAnchor(Bottom,this,Bottom,0);
+}
+
 void PlainText::calculateLineCount()
 {
     const Display::FontData *d = FontManager::getFontData(m_fontName);
     Rect rect = rectangle();
-    uint32_t lineCount = rect.h/d->symbolHeight();
+    uint32_t contentItemHeight = rect.h-m_upTr->height()-m_downTr->height();
+    uint32_t lineCount = contentItemHeight/d->symbolHeight();
     if (lineCount == m_lines.size())
         return;
     if (lineCount < m_lines.size()){
