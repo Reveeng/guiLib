@@ -8,9 +8,11 @@
 class MenuButtonData
 {
 public:
-    MenuButtonData(std::string t, bool c, std::function<void()> f):
+    MenuButtonData(std::string t,
+                   std::function<bool()> chF,
+                   std::function<void()> f):
         m_btnText(t),
-        m_isChecked(c),
+        m_checkF(chF),
         m_callback(f)
     {
 
@@ -19,9 +21,14 @@ public:
     {
 
     }
+
+    bool isChecked()
+    {
+        return m_checkF();
+    }
 private:
     std::string m_btnText;
-    bool m_isChecked;
+    std::function<bool()> m_checkF;
     std::function<void()> m_callback;
 
     friend class MenuButton;
