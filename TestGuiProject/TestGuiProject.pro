@@ -2,13 +2,23 @@ QT -= gui core
 
 CONFIG += c++17
 
-INCLUDEPATH += ./Controls
+INCLUDEPATH += ./Controls ./Icons
 
 SOURCES += \
     Controls/Button.cpp \
     Controls/PlainText.cpp \
+    Icons/CheckIcon.cpp \
+    Icons/DownTriangle.cpp \
+    Icons/UpTriangle.cpp \
     main.cpp
 
+
+HEADERS += \
+    Controls/Button.h \
+    Controls/PlainText.h \
+    Icons/CheckIcon.h \
+    Icons/DownTriangle.h \
+    Icons/UpTriangle.h
 
 unix:!macx: LIBS += -L$$OUT_PWD/../GUI/ -lGUI
 
@@ -31,6 +41,4 @@ DEPENDPATH += $$PWD/../MI12864Display $$PWD/../MI12864Display/Buffers \
 
 unix:!macx: PRE_TARGETDEPS += $$OUT_PWD/../MI12864Display/libMI12864Display.a
 
-HEADERS += \
-    Controls/Button.h \
-    Controls/PlainText.h
+
